@@ -16,54 +16,9 @@ export type GeneratedClientRequest = {
 
 export const operations = [
   {
-    "operationId": "getPublicJobs",
+    "operationId": "getAdminStats",
     "method": "GET",
-    "path": "/v1/public/jobs"
-  },
-  {
-    "operationId": "getPublicScams",
-    "method": "GET",
-    "path": "/v1/public/scams"
-  },
-  {
-    "operationId": "getPublicReferences",
-    "method": "GET",
-    "path": "/v1/public/references"
-  },
-  {
-    "operationId": "getPublicStatus",
-    "method": "GET",
-    "path": "/v1/public/status"
-  },
-  {
-    "operationId": "getMeProfile",
-    "method": "GET",
-    "path": "/v1/me/auth/me"
-  },
-  {
-    "operationId": "getMeSavedJobs",
-    "method": "GET",
-    "path": "/v1/me/saved-jobs"
-  },
-  {
-    "operationId": "getMeNotifications",
-    "method": "GET",
-    "path": "/v1/me/notifications"
-  },
-  {
-    "operationId": "getMeBackgroundCheck",
-    "method": "GET",
-    "path": "/v1/me/background-check"
-  },
-  {
-    "operationId": "getMePortfolioReviews",
-    "method": "GET",
-    "path": "/v1/me/portfolio-reviews"
-  },
-  {
-    "operationId": "getMeSettings",
-    "method": "GET",
-    "path": "/v1/me/settings"
+    "path": "/v1/admin/stats"
   },
   {
     "operationId": "getAdminUsers",
@@ -71,9 +26,9 @@ export const operations = [
     "path": "/v1/admin/users"
   },
   {
-    "operationId": "getAdminStats",
-    "method": "GET",
-    "path": "/v1/admin/stats"
+    "operationId": "postInternalChecksLookup",
+    "method": "POST",
+    "path": "/v1/internal/checks/lookup"
   },
   {
     "operationId": "postInternalIngestJobs",
@@ -86,58 +41,67 @@ export const operations = [
     "path": "/v1/internal/notify/dispatch"
   },
   {
-    "operationId": "postInternalChecksLookup",
-    "method": "POST",
-    "path": "/v1/internal/checks/lookup"
+    "operationId": "getMeProfile",
+    "method": "GET",
+    "path": "/v1/me/auth/me"
+  },
+  {
+    "operationId": "getMeBackgroundCheck",
+    "method": "GET",
+    "path": "/v1/me/background-check"
+  },
+  {
+    "operationId": "getMeNotifications",
+    "method": "GET",
+    "path": "/v1/me/notifications"
+  },
+  {
+    "operationId": "getMePortfolioReviews",
+    "method": "GET",
+    "path": "/v1/me/portfolio-reviews"
+  },
+  {
+    "operationId": "getMeSavedJobs",
+    "method": "GET",
+    "path": "/v1/me/saved-jobs"
+  },
+  {
+    "operationId": "getMeSettings",
+    "method": "GET",
+    "path": "/v1/me/settings"
+  },
+  {
+    "operationId": "getPublicJobs",
+    "method": "GET",
+    "path": "/v1/public/jobs"
+  },
+  {
+    "operationId": "getPublicReferences",
+    "method": "GET",
+    "path": "/v1/public/references"
+  },
+  {
+    "operationId": "getPublicScams",
+    "method": "GET",
+    "path": "/v1/public/scams"
+  },
+  {
+    "operationId": "getPublicStatus",
+    "method": "GET",
+    "path": "/v1/public/status"
   }
 ] as const;
 
-export function getPublicJobs(): GeneratedClientRequest {
-  return { method: "GET", path: "/v1/public/jobs" };
-}
-
-export function getPublicScams(): GeneratedClientRequest {
-  return { method: "GET", path: "/v1/public/scams" };
-}
-
-export function getPublicReferences(): GeneratedClientRequest {
-  return { method: "GET", path: "/v1/public/references" };
-}
-
-export function getPublicStatus(): GeneratedClientRequest {
-  return { method: "GET", path: "/v1/public/status" };
-}
-
-export function getMeProfile(): GeneratedClientRequest {
-  return { method: "GET", path: "/v1/me/auth/me" };
-}
-
-export function getMeSavedJobs(): GeneratedClientRequest {
-  return { method: "GET", path: "/v1/me/saved-jobs" };
-}
-
-export function getMeNotifications(): GeneratedClientRequest {
-  return { method: "GET", path: "/v1/me/notifications" };
-}
-
-export function getMeBackgroundCheck(): GeneratedClientRequest {
-  return { method: "GET", path: "/v1/me/background-check" };
-}
-
-export function getMePortfolioReviews(): GeneratedClientRequest {
-  return { method: "GET", path: "/v1/me/portfolio-reviews" };
-}
-
-export function getMeSettings(): GeneratedClientRequest {
-  return { method: "GET", path: "/v1/me/settings" };
+export function getAdminStats(): GeneratedClientRequest {
+  return { method: "GET", path: "/v1/admin/stats" };
 }
 
 export function getAdminUsers(): GeneratedClientRequest {
   return { method: "GET", path: "/v1/admin/users" };
 }
 
-export function getAdminStats(): GeneratedClientRequest {
-  return { method: "GET", path: "/v1/admin/stats" };
+export function postInternalChecksLookup(): GeneratedClientRequest {
+  return { method: "POST", path: "/v1/internal/checks/lookup" };
 }
 
 export function postInternalIngestJobs(): GeneratedClientRequest {
@@ -148,6 +112,42 @@ export function postInternalNotifyDispatch(): GeneratedClientRequest {
   return { method: "POST", path: "/v1/internal/notify/dispatch" };
 }
 
-export function postInternalChecksLookup(): GeneratedClientRequest {
-  return { method: "POST", path: "/v1/internal/checks/lookup" };
+export function getMeProfile(): GeneratedClientRequest {
+  return { method: "GET", path: "/v1/me/auth/me" };
+}
+
+export function getMeBackgroundCheck(): GeneratedClientRequest {
+  return { method: "GET", path: "/v1/me/background-check" };
+}
+
+export function getMeNotifications(): GeneratedClientRequest {
+  return { method: "GET", path: "/v1/me/notifications" };
+}
+
+export function getMePortfolioReviews(): GeneratedClientRequest {
+  return { method: "GET", path: "/v1/me/portfolio-reviews" };
+}
+
+export function getMeSavedJobs(): GeneratedClientRequest {
+  return { method: "GET", path: "/v1/me/saved-jobs" };
+}
+
+export function getMeSettings(): GeneratedClientRequest {
+  return { method: "GET", path: "/v1/me/settings" };
+}
+
+export function getPublicJobs(): GeneratedClientRequest {
+  return { method: "GET", path: "/v1/public/jobs" };
+}
+
+export function getPublicReferences(): GeneratedClientRequest {
+  return { method: "GET", path: "/v1/public/references" };
+}
+
+export function getPublicScams(): GeneratedClientRequest {
+  return { method: "GET", path: "/v1/public/scams" };
+}
+
+export function getPublicStatus(): GeneratedClientRequest {
+  return { method: "GET", path: "/v1/public/status" };
 }
