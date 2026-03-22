@@ -98,14 +98,12 @@ function getOpenapiOperations(openapiRootPath: string): ContractOperation[] {
     throw new Error(`Expected 'paths' in ${openapiRootPath} to be a YAML object.`);
   }
 
-  const sortedRootPathEntries = Object.entries(rootPathsNode).sort(([leftPath], [rightPath]) =>
-    leftPath.localeCompare(rightPath),
-  );
+  const rootPathEntries = Object.entries(rootPathsNode);
 
   const pathDocumentCache = new Map<string, YamlRecord>();
   const operations: ContractOperation[] = [];
 
-  for (const [path, pathReferenceNode] of sortedRootPathEntries) {
+  for (const [path, pathReferenceNode] of rootPathEntries) {
     if (!isYamlRecord(pathReferenceNode)) {
       throw new Error(`Expected path entry for '${path}' to be a YAML object.`);
     }
