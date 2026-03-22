@@ -1,0 +1,43 @@
+paths:
+  /v1/me/auth/me:
+    get:
+      operationId: getMeProfile
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
+  /v1/me/saved-jobs:
+    get:
+      operationId: getMeSavedJobs
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
+  /v1/me/notifications:
+    get:
+      operationId: getMeNotifications
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
+  /v1/me/background-check:
+    get:
+      operationId: getMeBackgroundCheck
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
+  /v1/me/portfolio-reviews:
+    get:
+      operationId: getMePortfolioReviews
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
+  /v1/me/settings:
+    get:
+      operationId: getMeSettings
+      tags: [Me]
+      responses:
+        "200":
+          description: OK

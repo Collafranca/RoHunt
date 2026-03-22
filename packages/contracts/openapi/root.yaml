@@ -1,0 +1,35 @@
+openapi: 3.1.0
+info:
+  title: RoHunt API Contracts
+  version: 1.0.0
+paths:
+  /v1/public/jobs:
+    $ref: "./paths/public.yaml#/paths/~1v1~1public~1jobs"
+  /v1/public/scams:
+    $ref: "./paths/public.yaml#/paths/~1v1~1public~1scams"
+  /v1/public/references:
+    $ref: "./paths/public.yaml#/paths/~1v1~1public~1references"
+  /v1/public/status:
+    $ref: "./paths/public.yaml#/paths/~1v1~1public~1status"
+  /v1/me/auth/me:
+    $ref: "./paths/me.yaml#/paths/~1v1~1me~1auth~1me"
+  /v1/me/saved-jobs:
+    $ref: "./paths/me.yaml#/paths/~1v1~1me~1saved-jobs"
+  /v1/me/notifications:
+    $ref: "./paths/me.yaml#/paths/~1v1~1me~1notifications"
+  /v1/me/background-check:
+    $ref: "./paths/me.yaml#/paths/~1v1~1me~1background-check"
+  /v1/me/portfolio-reviews:
+    $ref: "./paths/me.yaml#/paths/~1v1~1me~1portfolio-reviews"
+  /v1/me/settings:
+    $ref: "./paths/me.yaml#/paths/~1v1~1me~1settings"
+  /v1/admin/users:
+    $ref: "./paths/admin.yaml#/paths/~1v1~1admin~1users"
+  /v1/admin/stats:
+    $ref: "./paths/admin.yaml#/paths/~1v1~1admin~1stats"
+  /v1/internal/ingest/jobs:
+    $ref: "./paths/internal.yaml#/paths/~1v1~1internal~1ingest~1jobs"
+  /v1/internal/notify/dispatch:
+    $ref: "./paths/internal.yaml#/paths/~1v1~1internal~1notify~1dispatch"
+  /v1/internal/checks/lookup:
+    $ref: "./paths/internal.yaml#/paths/~1v1~1internal~1checks~1lookup"

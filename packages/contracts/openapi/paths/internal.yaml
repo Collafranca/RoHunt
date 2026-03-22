@@ -1,0 +1,22 @@
+paths:
+  /v1/internal/ingest/jobs:
+    post:
+      operationId: postInternalIngestJobs
+      tags: [Internal]
+      responses:
+        "202":
+          description: Accepted
+  /v1/internal/notify/dispatch:
+    post:
+      operationId: postInternalNotifyDispatch
+      tags: [Internal]
+      responses:
+        "202":
+          description: Accepted
+  /v1/internal/checks/lookup:
+    post:
+      operationId: postInternalChecksLookup
+      tags: [Internal]
+      responses:
+        "200":
+          description: OK

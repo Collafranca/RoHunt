@@ -1,0 +1,15 @@
+paths:
+  /v1/admin/users:
+    get:
+      operationId: getAdminUsers
+      tags: [Admin]
+      responses:
+        "200":
+          description: OK
+  /v1/admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [Admin]
+      responses:
+        "200":
+          description: OK

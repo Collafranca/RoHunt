@@ -1,0 +1,29 @@
+paths:
+  /v1/public/jobs:
+    get:
+      operationId: getPublicJobs
+      tags: [Public]
+      responses:
+        "200":
+          description: OK
+  /v1/public/scams:
+    get:
+      operationId: getPublicScams
+      tags: [Public]
+      responses:
+        "200":
+          description: OK
+  /v1/public/references:
+    get:
+      operationId: getPublicReferences
+      tags: [Public]
+      responses:
+        "200":
+          description: OK
+  /v1/public/status:
+    get:
+      operationId: getPublicStatus
+      tags: [Public]
+      responses:
+        "200":
+          description: OK
