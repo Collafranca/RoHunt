@@ -1,26 +1,139 @@
-import { writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const operations = [
-  { operationId: "getPublicJobs", method: "GET", path: "/v1/public/jobs" },
-  { operationId: "getPublicScams", method: "GET", path: "/v1/public/scams" },
-  { operationId: "getPublicReferences", method: "GET", path: "/v1/public/references" },
-  { operationId: "getPublicStatus", method: "GET", path: "/v1/public/status" },
-  { operationId: "getMeProfile", method: "GET", path: "/v1/me/auth/me" },
-  { operationId: "getMeSavedJobs", method: "GET", path: "/v1/me/saved-jobs" },
-  { operationId: "getMeNotifications", method: "GET", path: "/v1/me/notifications" },
-  { operationId: "getMeBackgroundCheck", method: "GET", path: "/v1/me/background-check" },
-  { operationId: "getMePortfolioReviews", method: "GET", path: "/v1/me/portfolio-reviews" },
-  { operationId: "getMeSettings", method: "GET", path: "/v1/me/settings" },
-  { operationId: "getAdminUsers", method: "GET", path: "/v1/admin/users" },
-  { operationId: "getAdminStats", method: "GET", path: "/v1/admin/stats" },
-  { operationId: "postInternalIngestJobs", method: "POST", path: "/v1/internal/ingest/jobs" },
-  { operationId: "postInternalNotifyDispatch", method: "POST", path: "/v1/internal/notify/dispatch" },
-  { operationId: "postInternalChecksLookup", method: "POST", path: "/v1/internal/checks/lookup" },
-] as const;
+type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+type RootPathRef = {
+  readonly path: string;
+  readonly refPath: string;
+};
+
+type PathFileOperation = {
+  readonly path: string;
+  readonly method: HttpMethod;
+  readonly operationId: string;
+};
+
+type ContractOperation = {
+  readonly operationId: string;
+  readonly method: HttpMethod;
+  readonly path: string;
+};
+
+const METHOD_ORDER: readonly HttpMethod[] = ["GET", "POST", "PUT", "PATCH", "DELETE"];
+
+function parseRootPathRefs(rootSpec: string): RootPathRef[] {
+  const refs: RootPathRef[] = [];
+  const lines = rootSpec.split("\n");
+
+  let currentPath: string | null = null;
+
+  for (const line of lines) {
+    const pathMatch = line.match(/^  (\/[^:]+):\s*$/);
+    if (pathMatch) {
+      currentPath = pathMatch[1];
+      continue;
+    }
+
+    const refMatch = line.match(/^    \$ref:\s+"([^"]+)"\s*$/);
+    if (currentPath && refMatch) {
+      refs.push({ path: currentPath, refPath: refMatch[1] });
+      currentPath = null;
+    }
+  }
+
+  return refs;
+}
+
+function parsePathFileOperations(pathSpec: string): PathFileOperation[] {
+  const operations: PathFileOperation[] = [];
+  const lines = pathSpec.split("\n");
+
+  let currentPath: string | null = null;
+  let currentMethod: HttpMethod | null = null;
+
+  for (const line of lines) {
+    const pathMatch = line.match(/^  (\/[^:]+):\s*$/);
+    if (pathMatch) {
+      currentPath = pathMatch[1];
+      currentMethod = null;
+      continue;
+    }
+
+    const methodMatch = line.match(/^    (get|post|put|patch|delete):\s*$/i);
+    if (currentPath && methodMatch) {
+      currentMethod = methodMatch[1].toUpperCase() as HttpMethod;
+      continue;
+    }
+
+    const operationIdMatch = line.match(/^      operationId:\s*([A-Za-z0-9_]+)\s*$/);
+    if (currentPath && currentMethod && operationIdMatch) {
+      operations.push({
+        path: currentPath,
+        method: currentMethod,
+        operationId: operationIdMatch[1],
+      });
+      currentMethod = null;
+    }
+  }
+
+  return operations;
+}
+
+function getOperationsFromOpenapi(openapiRootPath: string): ContractOperation[] {
+  const openapiDir = dirname(openapiRootPath);
+  const rootSpec = readFileSync(openapiRootPath, "utf-8");
+  const rootPathRefs = parseRootPathRefs(rootSpec);
+
+  const pathFileCache = new Map<string, PathFileOperation[]>();
+  const operations: ContractOperation[] = [];
+
+  for (const rootPathRef of rootPathRefs) {
+    const relativeFilePath = rootPathRef.refPath.split("#")[0];
+    if (!relativeFilePath) {
+      throw new Error(`Missing file reference for path ${rootPathRef.path}`);
+    }
+
+    const absoluteFilePath = resolve(openapiDir, relativeFilePath);
+
+    if (!pathFileCache.has(absoluteFilePath)) {
+      const pathSpec = readFileSync(absoluteFilePath, "utf-8");
+      pathFileCache.set(absoluteFilePath, parsePathFileOperations(pathSpec));
+    }
+
+    const fileOperations = pathFileCache.get(absoluteFilePath) ?? [];
+    const byPath = fileOperations.filter((operation) => operation.path === rootPathRef.path);
+
+    for (const method of METHOD_ORDER) {
+      const operation = byPath.find((item) => item.method === method);
+      if (!operation) {
+        continue;
+      }
+
+      operations.push({
+        operationId: operation.operationId,
+        method: operation.method,
+        path: operation.path,
+      });
+    }
+  }
+
+  return operations;
+}
+
+const scriptDir = dirname(fileURLToPath(import.meta.url));
+const packageRoot = resolve(scriptDir, "..");
+const openapiRootPath = resolve(packageRoot, "openapi/root.yaml");
+const outPath = resolve(packageRoot, "src/generated/client.ts");
+
+const operations = getOperationsFromOpenapi(openapiRootPath);
+const methods = [...new Set(operations.map((operation) => operation.method))]
+  .sort((a, b) => METHOD_ORDER.indexOf(a) - METHOD_ORDER.indexOf(b));
+const httpMethodType = methods.map((method) => `"${method}"`).join(" | ");
 
 const generatedHeader = `/* eslint-disable */\n// This file is generated by scripts/generate.ts. Do not edit manually.\n`;
-const sharedTypes = `\nexport type HttpMethod = "GET" | "POST";\n\nexport type ContractOperation = {\n  readonly operationId: string;\n  readonly method: HttpMethod;\n  readonly path: string;\n};\n\nexport type GeneratedClientRequest = {\n  readonly method: HttpMethod;\n  readonly path: string;\n};\n\n`;
+const sharedTypes = `\nexport type HttpMethod = ${httpMethodType};\n\nexport type ContractOperation = {\n  readonly operationId: string;\n  readonly method: HttpMethod;\n  readonly path: string;\n};\n\nexport type GeneratedClientRequest = {\n  readonly method: HttpMethod;\n  readonly path: string;\n};\n\n`;
 
 const operationsLiteral = `export const operations = ${JSON.stringify(operations, null, 2)} as const;\n\n`;
 
@@ -33,7 +146,6 @@ const wrappers = operations
 
 const output = `${generatedHeader}${sharedTypes}${operationsLiteral}${wrappers}`;
 
-const outPath = resolve(process.cwd(), "src/generated/client.ts");
 writeFileSync(outPath, output, "utf-8");
 
 console.log(`Generated ${operations.length} contract operations at ${outPath}`);
