@@ -1,1 +1,16 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Environment files
+.env
+.env.local
+
+# Tooling
+pnpm-debug.log*
+.DS_Store
 .worktrees/

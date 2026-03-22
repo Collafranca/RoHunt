@@ -1,0 +1,10 @@
+{
+  "name": "@rohunt/bot",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "lint": "node -e \"console.log('lint @rohunt/bot (stub)')\"",
+    "typecheck": "node -e \"console.log('typecheck @rohunt/bot (stub)')\"",
+    "test": "node -e \"console.log('test @rohunt/bot (stub)')\""
+  }
+}

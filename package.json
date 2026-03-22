@@ -1,0 +1,12 @@
+{
+  "name": "rohunt-new",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.0.0",
+  "scripts": {
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "verify:workspace": "./scripts/verify-workspace.sh"
+  }
+}

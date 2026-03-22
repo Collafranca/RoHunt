@@ -1,0 +1,10 @@
+{
+  "name": "@rohunt/domain",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "lint": "node -e \"console.log('lint @rohunt/domain (stub)')\"",
+    "typecheck": "node -e \"console.log('typecheck @rohunt/domain (stub)')\"",
+    "test": "node -e \"console.log('test @rohunt/domain (stub)')\""
+  }
+}

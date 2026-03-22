@@ -1,0 +1,10 @@
+{
+  "name": "@rohunt/scraper",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "lint": "node -e \"console.log('lint @rohunt/scraper (stub)')\"",
+    "typecheck": "node -e \"console.log('typecheck @rohunt/scraper (stub)')\"",
+    "test": "node -e \"console.log('test @rohunt/scraper (stub)')\""
+  }
+}
