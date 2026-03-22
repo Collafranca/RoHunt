@@ -32,11 +32,11 @@ if [[ $missing -ne 0 ]]; then
   exit 1
 fi
 
-node <<'NODE'
+ROOT="$ROOT" node <<'NODE'
 const fs = require('fs');
 const path = require('path');
 
-const root = process.cwd();
+const root = process.env.ROOT;
 
 const expected = [
   { file: 'apps/api/package.json', name: '@rohunt/api' },
