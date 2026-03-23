@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS scam_reports (
   details TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc', now()),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc', now()),
+  CONSTRAINT ck_scam_reports_status CHECK (status IN ('open', 'investigating', 'resolved', 'dismissed')),
   CONSTRAINT fk_scam_reports_reported_user FOREIGN KEY (reported_user_id) REFERENCES users (id),
   CONSTRAINT fk_scam_reports_reporter_user FOREIGN KEY (reporter_user_id) REFERENCES users (id),
   CONSTRAINT fk_scam_reports_job FOREIGN KEY (job_id) REFERENCES jobs (id) ON DELETE SET NULL

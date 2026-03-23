@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   user_agent TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc', now()),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc', now()),
+  CONSTRAINT ck_audit_logs_actor_reference CHECK (actor_user_id IS NOT NULL OR actor_api_key_id IS NOT NULL),
   CONSTRAINT fk_audit_logs_actor_user FOREIGN KEY (actor_user_id) REFERENCES users (id) ON DELETE SET NULL,
   CONSTRAINT fk_audit_logs_actor_api_key FOREIGN KEY (actor_api_key_id) REFERENCES api_keys (id) ON DELETE SET NULL
 );

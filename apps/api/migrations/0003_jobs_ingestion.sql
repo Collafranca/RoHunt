@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS jobs (
   expires_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc', now()),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc', now()),
+  CONSTRAINT ck_jobs_status CHECK (status IN ('open', 'filled', 'closed')),
   CONSTRAINT fk_jobs_source FOREIGN KEY (source_id) REFERENCES job_sources (id),
   CONSTRAINT fk_jobs_posted_by_user FOREIGN KEY (posted_by_user_id) REFERENCES users (id)
 );
@@ -37,6 +38,7 @@ CREATE TABLE IF NOT EXISTS job_skill_tags (
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc', now()),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc', now()),
   CONSTRAINT uq_job_skill_tags_job_skill UNIQUE (job_id, skill_id),
+  CONSTRAINT ck_job_skill_tags_confidence CHECK (confidence IS NULL OR (confidence >= 0 AND confidence <= 1)),
   CONSTRAINT fk_job_skill_tags_job FOREIGN KEY (job_id) REFERENCES jobs (id) ON DELETE CASCADE,
   CONSTRAINT fk_job_skill_tags_skill FOREIGN KEY (skill_id) REFERENCES skills (id)
 );

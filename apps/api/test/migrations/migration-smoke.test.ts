@@ -82,6 +82,23 @@ describe("SQL migration baseline", () => {
     }
   });
 
+  it("defines required check constraints for bounded domains", async () => {
+    const allSql = (await Promise.all(migrationFiles.map(readMigration))).join("\n\n");
+
+    const requiredChecks = [
+      /CONSTRAINT\s+ck_jobs_status\s+CHECK\s*\(status\s+IN\s*\('open',\s*'filled',\s*'closed'\)\)/i,
+      /CONSTRAINT\s+ck_scam_reports_status\s+CHECK\s*\(status\s+IN\s*\('open',\s*'investigating',\s*'resolved',\s*'dismissed'\)\)/i,
+      /CONSTRAINT\s+ck_job_skill_tags_confidence\s+CHECK\s*\(confidence\s+IS\s+NULL\s+OR\s*\(confidence\s*>=\s*0\s+AND\s+confidence\s*<=\s*1\)\)/i,
+      /CONSTRAINT\s+ck_ai_job_matches_match_score\s+CHECK\s*\(match_score\s*>=\s*0\s+AND\s+match_score\s*<=\s*1\)/i,
+      /CONSTRAINT\s+ck_ai_portfolio_reviews_score\s+CHECK\s*\(score\s+IS\s+NULL\s+OR\s*\(score\s*>=\s*0\s+AND\s+score\s*<=\s*100\)\)/i,
+      /CONSTRAINT\s+ck_audit_logs_actor_reference\s+CHECK\s*\(actor_user_id\s+IS\s+NOT\s+NULL\s+OR\s+actor_api_key_id\s+IS\s+NOT\s+NULL\)/i,
+    ];
+
+    for (const checkPattern of requiredChecks) {
+      expect(allSql).toMatch(checkPattern);
+    }
+  });
+
   it("defines critical domain indexes", async () => {
     const allSql = (await Promise.all(migrationFiles.map(readMigration))).join("\n\n");
 
