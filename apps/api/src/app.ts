@@ -9,7 +9,10 @@ import { requestIdMiddleware } from "./middleware/request-id";
 import { adminHealthRoute } from "./routes/admin/health";
 import { adminStatsRoute } from "./routes/admin/stats";
 import { adminUsersRoute } from "./routes/admin/users";
+import { internalChecksRoute } from "./routes/internal/checks";
 import { internalHealthRoute } from "./routes/internal/health";
+import { internalIngestRoute } from "./routes/internal/ingest";
+import { internalNotifyRoute } from "./routes/internal/notify";
 import { meBackgroundCheckRoute } from "./routes/me/background-check";
 import { meAuthRoute } from "./routes/me/auth";
 import { meHealthRoute } from "./routes/me/health";
@@ -56,5 +59,8 @@ app.route("/v1/admin", adminStatsRoute);
 
 app.use("/v1/internal/*", authInternalMiddleware);
 app.route("/v1/internal", internalHealthRoute);
+app.route("/v1/internal", internalIngestRoute);
+app.route("/v1/internal", internalNotifyRoute);
+app.route("/v1/internal", internalChecksRoute);
 
 app.onError(handleError);

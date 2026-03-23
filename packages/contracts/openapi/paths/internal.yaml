@@ -6,6 +6,10 @@ paths:
       responses:
         "202":
           description: Accepted
+        "401":
+          description: Unauthorized (invalid signature, stale timestamp, or nonce replay)
+        "403":
+          description: Forbidden (insufficient internal scope)
   /v1/internal/notify/dispatch:
     post:
       operationId: postInternalNotifyDispatch
@@ -13,6 +17,10 @@ paths:
       responses:
         "202":
           description: Accepted
+        "401":
+          description: Unauthorized (invalid signature, stale timestamp, or nonce replay)
+        "403":
+          description: Forbidden (insufficient internal scope)
   /v1/internal/checks/lookup:
     post:
       operationId: postInternalChecksLookup
@@ -20,3 +28,7 @@ paths:
       responses:
         "200":
           description: OK
+        "401":
+          description: Unauthorized (invalid signature, stale timestamp, or nonce replay)
+        "403":
+          description: Forbidden (insufficient internal scope)
