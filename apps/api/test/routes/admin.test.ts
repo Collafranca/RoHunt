@@ -6,6 +6,8 @@ import { clearSessionsRepository } from "../../src/repositories/auth/sessions";
 import { clearUsersRepository } from "../../src/repositories/auth/users";
 
 const OAUTH_STATE_COOKIE_NAME = "rohunt_oauth_state";
+const ADMIN_USERS_SEED_CODE = "seed_admin_users_9f3k2";
+const ADMIN_STATS_SEED_CODE = "seed_admin_stats_q7m4p";
 
 async function createSessionCookie(code: string): Promise<string> {
   const response = await app.request(`/v1/me/auth/discord/callback?code=${code}&state=state_${code}`, {
@@ -124,8 +126,33 @@ describe("admin v1 routes", () => {
     });
   });
 
+  it("does not grant admin access from code=admin or code=admin_stats", async () => {
+    const adminCodeCookie = await createSessionCookie("admin");
+    const adminStatsCodeCookie = await createSessionCookie("admin_stats");
+
+    const adminCodeUsersResponse = await app.request("/v1/admin/users", {
+      headers: { cookie: adminCodeCookie },
+    });
+    expect(adminCodeUsersResponse.status).toBe(403);
+
+    const adminCodeStatsResponse = await app.request("/v1/admin/stats", {
+      headers: { cookie: adminCodeCookie },
+    });
+    expect(adminCodeStatsResponse.status).toBe(403);
+
+    const adminStatsCodeUsersResponse = await app.request("/v1/admin/users", {
+      headers: { cookie: adminStatsCodeCookie },
+    });
+    expect(adminStatsCodeUsersResponse.status).toBe(403);
+
+    const adminStatsCodeStatsResponse = await app.request("/v1/admin/stats", {
+      headers: { cookie: adminStatsCodeCookie },
+    });
+    expect(adminStatsCodeStatsResponse.status).toBe(403);
+  });
+
   it("allows admin users listing, detail, and action endpoints", async () => {
-    const cookie = await createSessionCookie("admin");
+    const cookie = await createSessionCookie(ADMIN_USERS_SEED_CODE);
 
     const listResponse = await app.request("/v1/admin/users", {
       headers: { cookie },
@@ -170,7 +197,7 @@ describe("admin v1 routes", () => {
   });
 
   it("allows admin users to read platform stats", async () => {
-    const cookie = await createSessionCookie("admin_stats");
+    const cookie = await createSessionCookie(ADMIN_STATS_SEED_CODE);
 
     const response = await app.request("/v1/admin/stats", {
       headers: { cookie },

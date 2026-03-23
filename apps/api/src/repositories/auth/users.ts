@@ -16,7 +16,10 @@ type UpsertDiscordUserInput = {
 
 const usersById = new Map<string, AuthUser>();
 const userIdByDiscordId = new Map<string, string>();
-const ADMIN_DISCORD_IDS = new Set<string>(["discord_admin", "discord_admin_stats"]);
+const ADMIN_DISCORD_IDS = new Set<string>([
+  "discord_seed_admin_users_9f3k2",
+  "discord_seed_admin_stats_q7m4p",
+]);
 
 function resolveAuthUserRole(discordId: string): AuthUserRole {
   return ADMIN_DISCORD_IDS.has(discordId) ? "admin" : "member";
