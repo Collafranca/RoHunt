@@ -33,6 +33,10 @@ paths:
     $ref: "./paths/me.yaml#/paths/~1v1~1me~1settings~1account"
   /v1/admin/users:
     $ref: "./paths/admin.yaml#/paths/~1v1~1admin~1users"
+  /v1/admin/users/{userId}:
+    $ref: "./paths/admin.yaml#/paths/~1v1~1admin~1users~1{userId}"
+  /v1/admin/users/{userId}/action:
+    $ref: "./paths/admin.yaml#/paths/~1v1~1admin~1users~1{userId}~1action"
   /v1/admin/stats:
     $ref: "./paths/admin.yaml#/paths/~1v1~1admin~1stats"
   /v1/internal/ingest/jobs:

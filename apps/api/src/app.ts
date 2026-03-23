@@ -7,6 +7,8 @@ import { handleError } from "./middleware/errors";
 import { rateLimitMiddleware } from "./middleware/rate-limit";
 import { requestIdMiddleware } from "./middleware/request-id";
 import { adminHealthRoute } from "./routes/admin/health";
+import { adminStatsRoute } from "./routes/admin/stats";
+import { adminUsersRoute } from "./routes/admin/users";
 import { internalHealthRoute } from "./routes/internal/health";
 import { meBackgroundCheckRoute } from "./routes/me/background-check";
 import { meAuthRoute } from "./routes/me/auth";
@@ -49,6 +51,8 @@ app.route("/v1/me", meSettingsRoute);
 
 app.use("/v1/admin/*", authAdminMiddleware);
 app.route("/v1/admin", adminHealthRoute);
+app.route("/v1/admin", adminUsersRoute);
+app.route("/v1/admin", adminStatsRoute);
 
 app.use("/v1/internal/*", authInternalMiddleware);
 app.route("/v1/internal", internalHealthRoute);

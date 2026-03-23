@@ -126,6 +126,16 @@ export const operations = [
     "path": "/v1/admin/users"
   },
   {
+    "operationId": "getAdminUserById",
+    "method": "GET",
+    "path": "/v1/admin/users/{userId}"
+  },
+  {
+    "operationId": "postAdminUserAction",
+    "method": "POST",
+    "path": "/v1/admin/users/{userId}/action"
+  },
+  {
     "operationId": "getAdminStats",
     "method": "GET",
     "path": "/v1/admin/stats"
@@ -233,6 +243,14 @@ export function deleteMeSettingsAccount(): GeneratedClientRequest {
 
 export function getAdminUsers(): GeneratedClientRequest {
   return { method: "GET", path: "/v1/admin/users" };
+}
+
+export function getAdminUserById(): GeneratedClientRequest {
+  return { method: "GET", path: "/v1/admin/users/{userId}" };
+}
+
+export function postAdminUserAction(): GeneratedClientRequest {
+  return { method: "POST", path: "/v1/admin/users/{userId}/action" };
 }
 
 export function getAdminStats(): GeneratedClientRequest {

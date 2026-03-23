@@ -5,11 +5,186 @@ paths:
       tags: [Admin]
       responses:
         "200":
-          description: OK
+          description: Admin user listing
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items]
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          required: [id, discordId, username, role, createdAt, updatedAt]
+                          properties:
+                            id:
+                              type: string
+                            discordId:
+                              type: string
+                            username:
+                              type: string
+                            role:
+                              type: string
+                              enum: [admin, member]
+                            createdAt:
+                              type: string
+                              format: date-time
+                            updatedAt:
+                              type: string
+                              format: date-time
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin role required
+  /v1/admin/users/{userId}:
+    get:
+      operationId: getAdminUserById
+      tags: [Admin]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Admin user detail
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [user]
+                    properties:
+                      user:
+                        type: object
+                        required: [id, discordId, username, role, createdAt, updatedAt]
+                        properties:
+                          id:
+                            type: string
+                          discordId:
+                            type: string
+                          username:
+                            type: string
+                          role:
+                            type: string
+                            enum: [admin, member]
+                          createdAt:
+                            type: string
+                            format: date-time
+                          updatedAt:
+                            type: string
+                            format: date-time
+        "400":
+          description: Invalid path parameter
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin role required
+        "404":
+          description: User not found
+  /v1/admin/users/{userId}/action:
+    post:
+      operationId: postAdminUserAction
+      tags: [Admin]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action:
+                  type: string
+                  enum: [suspend]
+      responses:
+        "200":
+          description: Admin action accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [result]
+                    properties:
+                      result:
+                        type: object
+                        required: [userId, action, status, actedAt]
+                        properties:
+                          userId:
+                            type: string
+                          action:
+                            type: string
+                            enum: [suspend]
+                          status:
+                            type: string
+                            enum: [accepted]
+                          actedAt:
+                            type: string
+                            format: date-time
+        "400":
+          description: Invalid path parameter or request body
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin role required
+        "404":
+          description: User not found
   /v1/admin/stats:
     get:
       operationId: getAdminStats
       tags: [Admin]
       responses:
         "200":
-          description: OK
+          description: Admin platform stats
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: object
+                    required: [users, jobs]
+                    properties:
+                      users:
+                        type: object
+                        required: [total]
+                        properties:
+                          total:
+                            type: integer
+                      jobs:
+                        type: object
+                        required: [total]
+                        properties:
+                          total:
+                            type: integer
+                  meta:
+                    type: object
+                    required: [generatedAt]
+                    properties:
+                      generatedAt:
+                        type: string
+                        format: date-time
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin role required
