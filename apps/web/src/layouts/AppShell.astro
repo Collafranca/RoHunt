@@ -1,0 +1,48 @@
+---
+import AppNav from "../components/system/AppNav.astro";
+import "../styles/globals.css";
+---
+
+<html lang="en">
+  <body>
+    <div class="app-shell">
+      <header class="app-shell__header">
+        <a href="/" class="app-shell__brand" aria-label="RoHunt home">
+          <span>RoHunt</span>
+        </a>
+        <AppNav />
+      </header>
+      <main class="app-shell__content">
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>
+
+<style>
+  .app-shell {
+    min-height: 100vh;
+    background: var(--rh-color-bg);
+    color: var(--rh-color-fg);
+  }
+
+  .app-shell__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--rh-space-md);
+    padding: var(--rh-space-md) var(--rh-space-lg);
+    background: var(--rh-color-surface);
+  }
+
+  .app-shell__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--rh-space-sm);
+    font-weight: 600;
+  }
+
+  .app-shell__content {
+    padding: var(--rh-space-lg);
+  }
+</style>

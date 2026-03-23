@@ -1,0 +1,19 @@
+---
+const links = [
+  { href: "/jobs", label: "Jobs" },
+  { href: "/reviews", label: "Reviews" },
+  { href: "/scams", label: "Scams" },
+];
+---
+
+<nav aria-label="Primary">
+  <ul>
+    {
+      links.map((link) => (
+        <li>
+          <a href={link.href}>{link.label}</a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
