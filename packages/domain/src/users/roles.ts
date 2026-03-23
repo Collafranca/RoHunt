@@ -10,13 +10,17 @@ const rolePriority: Record<AuthRole, number> = {
 };
 
 export function hasMinimumRole(currentRole: AuthRole, requiredRole: AuthRole): boolean {
-  return rolePriority[currentRole] >= rolePriority[requiredRole];
+  const parsedCurrentRole = authRoleSchema.parse(currentRole);
+  const parsedRequiredRole = authRoleSchema.parse(requiredRole);
+
+  return rolePriority[parsedCurrentRole] >= rolePriority[parsedRequiredRole];
 }
 
 export function assertHasRole(currentRole: AuthRole, allowedRoles: readonly AuthRole[]): void {
+  const parsedCurrentRole = authRoleSchema.parse(currentRole);
   const parsedAllowedRoles = z.array(authRoleSchema).min(1).parse(allowedRoles);
 
-  if (!parsedAllowedRoles.includes(currentRole)) {
+  if (!parsedAllowedRoles.includes(parsedCurrentRole)) {
     throw new Error("Forbidden: role is not allowed");
   }
 }

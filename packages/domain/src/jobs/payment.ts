@@ -10,17 +10,21 @@ const cadenceSchema = z
     return value;
   });
 
-const paymentInputSchema = z.object({
-  amount: z.number().finite(),
-  currency: z.string().min(1),
-  cadence: cadenceSchema,
-});
+const paymentInputSchema = z
+  .object({
+    amount: z.number().finite(),
+    currency: z.string().min(1),
+    cadence: cadenceSchema,
+  })
+  .strict();
 
-export const paymentSchema = z.object({
-  amount: z.number().positive(),
-  currency: z.string().length(3),
-  cadence: z.enum(["fixed", "hour", "day", "week", "month"]),
-});
+export const paymentSchema = z
+  .object({
+    amount: z.number().positive(),
+    currency: z.string().length(3),
+    cadence: z.enum(["fixed", "hour", "day", "week", "month"]),
+  })
+  .strict();
 
 export type Payment = z.infer<typeof paymentSchema>;
 export type PaymentInput = z.input<typeof paymentInputSchema>;

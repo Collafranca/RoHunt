@@ -8,12 +8,14 @@ export const scamCategorySchema = z.enum([
   "other",
 ]);
 
-export const scamReportSchema = z.object({
-  reportedUserId: z.string().min(1),
-  category: scamCategorySchema,
-  details: z.string().min(20).max(2000),
-  evidenceLinks: z.array(z.string().url()).max(10).default([]),
-});
+export const scamReportSchema = z
+  .object({
+    reportedUserId: z.string().min(1),
+    category: scamCategorySchema,
+    details: z.string().min(20).max(2000),
+    evidenceLinks: z.array(z.string().url()).max(10).default([]),
+  })
+  .strict();
 
 export type ScamReport = z.infer<typeof scamReportSchema>;
 

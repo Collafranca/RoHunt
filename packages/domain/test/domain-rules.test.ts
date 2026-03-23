@@ -5,6 +5,8 @@ import {
   normalizePayment,
   parseNotificationFilter,
   parseReviewSections,
+  parseScamReport,
+  parseVerificationCheck,
 } from "../src/index";
 
 describe("@rohunt/domain rules", () => {
@@ -29,6 +31,17 @@ describe("@rohunt/domain rules", () => {
           amount: 0,
           currency: "USD",
           cadence: "fixed",
+        }),
+      ).toThrow();
+    });
+
+    it("rejects unknown keys on strict schemas", () => {
+      expect(() =>
+        normalizePayment({
+          amount: 100,
+          currency: "USD",
+          cadence: "fixed",
+          extra: true,
         }),
       ).toThrow();
     });
@@ -67,6 +80,41 @@ describe("@rohunt/domain rules", () => {
     });
   });
 
+  describe("verification checks", () => {
+    it("accepts a valid verification check", () => {
+      const check = parseVerificationCheck({
+        userId: "user_123",
+        status: "approved",
+        reason: "Submitted complete evidence",
+      });
+
+      expect(check).toEqual({
+        userId: "user_123",
+        status: "approved",
+        reason: "Submitted complete evidence",
+      });
+    });
+
+    it("rejects invalid status values", () => {
+      expect(() =>
+        parseVerificationCheck({
+          userId: "user_123",
+          status: "in_review",
+        }),
+      ).toThrow();
+    });
+
+    it("rejects unknown keys on strict schema", () => {
+      expect(() =>
+        parseVerificationCheck({
+          userId: "user_123",
+          status: "pending",
+          unexpected: "field",
+        }),
+      ).toThrow();
+    });
+  });
+
   describe("review section shape", () => {
     it("accepts well-formed review sections", () => {
       const sections = parseReviewSections([
@@ -96,6 +144,47 @@ describe("@rohunt/domain rules", () => {
     });
   });
 
+  describe("scam reports", () => {
+    it("accepts a valid scam report", () => {
+      const report = parseScamReport({
+        reportedUserId: "user_456",
+        category: "non_payment",
+        details: "Client failed to pay after milestone delivery and stopped responding.",
+        evidenceLinks: ["https://example.com/evidence/screenshot-1"],
+      });
+
+      expect(report).toEqual({
+        reportedUserId: "user_456",
+        category: "non_payment",
+        details: "Client failed to pay after milestone delivery and stopped responding.",
+        evidenceLinks: ["https://example.com/evidence/screenshot-1"],
+      });
+    });
+
+    it("rejects too-short details", () => {
+      expect(() =>
+        parseScamReport({
+          reportedUserId: "user_456",
+          category: "other",
+          details: "Too short",
+          evidenceLinks: [],
+        }),
+      ).toThrow();
+    });
+
+    it("rejects unknown keys on strict schema", () => {
+      expect(() =>
+        parseScamReport({
+          reportedUserId: "user_456",
+          category: "other",
+          details: "This report contains enough detail to meet minimum validation length.",
+          evidenceLinks: [],
+          extra: "not allowed",
+        }),
+      ).toThrow();
+    });
+  });
+
   describe("auth role guards", () => {
     it("treats admin as higher than moderator", () => {
       expect(hasMinimumRole("admin", "moderator")).toBe(true);
@@ -108,6 +197,11 @@ describe("@rohunt/domain rules", () => {
 
     it("does not throw when current role is allowed", () => {
       expect(() => assertHasRole("moderator", ["admin", "moderator"])).not.toThrow();
+    });
+
+    it("validates runtime role values", () => {
+      expect(() => hasMinimumRole("owner" as never, "user")).toThrow();
+      expect(() => assertHasRole("admin", ["owner" as never])).toThrow();
     });
   });
 });
