@@ -12,12 +12,19 @@ type CreateSessionInput = {
 const sessionsByToken = new Map<string, Session>();
 let sessionSequence = 0;
 
+function generateSessionToken(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 export function createSession(input: CreateSessionInput): Session {
   sessionSequence += 1;
 
   const createdAt = new Date().toISOString();
   const id = `session_${sessionSequence}`;
-  const token = `${id}_${input.userId}`;
+  const token = generateSessionToken();
 
   const session: Session = {
     id,

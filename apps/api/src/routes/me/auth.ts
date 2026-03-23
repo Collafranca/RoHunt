@@ -4,6 +4,8 @@ import { createSession, deleteSessionByToken } from "../../repositories/auth/ses
 import { upsertDiscordUser } from "../../repositories/auth/users";
 import { exchangeDiscordCode } from "../../services/auth/discord-oauth";
 import {
+  assertValidOAuthState,
+  buildClearedOAuthStateCookie,
   buildClearedSessionCookie,
   buildSessionCookie,
   requireAuthSessionContext,
@@ -13,11 +15,16 @@ export const meAuthRoute = new Hono();
 
 meAuthRoute.get("/auth/discord/callback", (c) => {
   const code = c.req.query("code");
+  const state = c.req.query("state");
+
+  assertValidOAuthState(state, c.req.header("cookie"));
+
   const discordProfile = exchangeDiscordCode(code);
   const user = upsertDiscordUser(discordProfile);
   const session = createSession({ userId: user.id });
 
   c.header("set-cookie", buildSessionCookie(session.token));
+  c.header("set-cookie", buildClearedOAuthStateCookie(), { append: true });
 
   return c.json({
     data: {

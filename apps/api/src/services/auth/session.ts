@@ -3,16 +3,9 @@ import { deleteSessionByToken, getSessionByToken, type Session } from "../../rep
 import { getUserById, type AuthUser } from "../../repositories/auth/users";
 
 export const SESSION_COOKIE_NAME = "rohunt_session";
+export const OAUTH_STATE_COOKIE_NAME = "rohunt_oauth_state";
 
-export function buildSessionCookie(token: string): string {
-  return `${SESSION_COOKIE_NAME}=${token}; Path=/; HttpOnly; SameSite=Lax`;
-}
-
-export function buildClearedSessionCookie(): string {
-  return `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;
-}
-
-export function parseSessionTokenFromCookie(cookieHeader: string | undefined): string | null {
+function parseCookieValue(cookieHeader: string | undefined, cookieName: string): string | null {
   if (!cookieHeader) {
     return null;
   }
@@ -22,7 +15,7 @@ export function parseSessionTokenFromCookie(cookieHeader: string | undefined): s
   for (const segment of segments) {
     const [rawName, ...rawValueParts] = segment.trim().split("=");
 
-    if (rawName !== SESSION_COOKIE_NAME) {
+    if (rawName !== cookieName) {
       continue;
     }
 
@@ -36,6 +29,35 @@ export function parseSessionTokenFromCookie(cookieHeader: string | undefined): s
   }
 
   return null;
+}
+
+export function buildSessionCookie(token: string): string {
+  return `${SESSION_COOKIE_NAME}=${token}; Path=/; HttpOnly; Secure; SameSite=Lax`;
+}
+
+export function buildClearedSessionCookie(): string {
+  return `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`;
+}
+
+export function buildClearedOAuthStateCookie(): string {
+  return `${OAUTH_STATE_COOKIE_NAME}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`;
+}
+
+export function parseOAuthStateFromCookie(cookieHeader: string | undefined): string | null {
+  return parseCookieValue(cookieHeader, OAUTH_STATE_COOKIE_NAME);
+}
+
+export function assertValidOAuthState(queryState: string | undefined, cookieHeader: string | undefined): void {
+  const normalizedState = queryState?.trim();
+  const cookieState = parseOAuthStateFromCookie(cookieHeader);
+
+  if (!normalizedState || !cookieState || cookieState !== normalizedState) {
+    throw new ApiError(400, "INVALID_QUERY", "Invalid 'state' query parameter");
+  }
+}
+
+export function parseSessionTokenFromCookie(cookieHeader: string | undefined): string | null {
+  return parseCookieValue(cookieHeader, SESSION_COOKIE_NAME);
 }
 
 export type AuthSessionContext = {
