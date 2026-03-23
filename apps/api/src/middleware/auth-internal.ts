@@ -1,7 +1,11 @@
 import type { MiddlewareHandler } from "hono";
 
 import { ApiError } from "./errors";
-import { hasSeenInternalNonce, recordInternalNonce } from "../repositories/internal/nonce-store";
+import {
+  consumeInternalNonceReservation,
+  releaseInternalNonceReservation,
+  reserveInternalNonce,
+} from "../repositories/internal/nonce-store";
 import { verifyInternalSignature } from "../services/internal/signature-verifier";
 
 const INTERNAL_ROUTE_SCOPE_MAP: ReadonlyArray<{
@@ -9,6 +13,7 @@ const INTERNAL_ROUTE_SCOPE_MAP: ReadonlyArray<{
   readonly method: string;
   readonly scope: string;
 }> = [
+  { path: "/v1/internal/health", method: "GET", scope: "internal:health:read" },
   { path: "/v1/internal/ingest/jobs", method: "POST", scope: "internal:ingest:jobs" },
   { path: "/v1/internal/notify/dispatch", method: "POST", scope: "internal:notify:dispatch" },
   { path: "/v1/internal/checks/lookup", method: "POST", scope: "internal:checks:lookup" },
@@ -35,28 +40,37 @@ export const authInternalMiddleware: MiddlewareHandler = async (c, next) => {
   const nonce = readRequiredHeader(c.req.header("x-internal-nonce"));
   const signature = readRequiredHeader(c.req.header("x-internal-signature"));
 
-  if (hasSeenInternalNonce(serviceId, nonce)) {
+  if (!reserveInternalNonce(serviceId, nonce)) {
     throw new ApiError(401, "UNAUTHORIZED", "Replay nonce detected");
   }
 
-  const body = await c.req.text();
-  const verification = verifyInternalSignature({
-    serviceId,
-    timestamp,
-    nonce,
-    signature,
-    method: c.req.method,
-    path: c.req.path,
-    body,
-  });
+  try {
+    const body = await c.req.text();
+    const verification = verifyInternalSignature({
+      serviceId,
+      timestamp,
+      nonce,
+      signature,
+      method: c.req.method,
+      path: c.req.path,
+      body,
+    });
 
-  const requiredScope = getRequiredScope(c.req.path, c.req.method);
+    const requiredScope = getRequiredScope(c.req.path, c.req.method);
 
-  if (requiredScope && !verification.scopes.includes(requiredScope)) {
-    throw new ApiError(403, "FORBIDDEN", "Insufficient internal scope");
+    if (!requiredScope) {
+      throw new ApiError(403, "FORBIDDEN", "Insufficient internal scope");
+    }
+
+    if (!verification.scopes.includes(requiredScope)) {
+      throw new ApiError(403, "FORBIDDEN", "Insufficient internal scope");
+    }
+
+    consumeInternalNonceReservation(serviceId, nonce);
+  } catch (error) {
+    releaseInternalNonceReservation(serviceId, nonce);
+    throw error;
   }
-
-  recordInternalNonce(serviceId, nonce);
 
   await next();
 };
