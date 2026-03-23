@@ -72,10 +72,10 @@ describe("public v1 routes", () => {
     expect(typeof body.meta.generatedAt).toBe("string");
   });
 
-  it("returns normalized error shape for invalid limit", async () => {
-    const response = await app.request("/v1/public/jobs?limit=0", {
+  it("returns normalized error shape for invalid non-numeric limit", async () => {
+    const response = await app.request("/v1/public/jobs?limit=abc", {
       headers: {
-        "x-request-id": "req-public-limit",
+        "x-request-id": "req-public-limit-non-numeric",
       },
     });
 
@@ -85,15 +85,51 @@ describe("public v1 routes", () => {
         code: "INVALID_QUERY",
         message: "Invalid 'limit' query parameter",
       },
-      requestId: "req-public-limit",
+      requestId: "req-public-limit-non-numeric",
     });
-    expect(response.headers.get("x-request-id")).toBe("req-public-limit");
+    expect(response.headers.get("x-request-id")).toBe("req-public-limit-non-numeric");
   });
 
-  it("returns normalized error shape for invalid cursor", async () => {
-    const response = await app.request("/v1/public/scams?cursor=-1", {
+  it("returns normalized error shape for invalid float limit", async () => {
+    const response = await app.request("/v1/public/jobs?limit=1.5", {
       headers: {
-        "x-request-id": "req-public-cursor",
+        "x-request-id": "req-public-limit-float",
+      },
+    });
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: "INVALID_QUERY",
+        message: "Invalid 'limit' query parameter",
+      },
+      requestId: "req-public-limit-float",
+    });
+    expect(response.headers.get("x-request-id")).toBe("req-public-limit-float");
+  });
+
+  it("returns normalized error shape for over-maximum limit", async () => {
+    const response = await app.request("/v1/public/scams?limit=101", {
+      headers: {
+        "x-request-id": "req-public-limit-maximum",
+      },
+    });
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: "INVALID_QUERY",
+        message: "Invalid 'limit' query parameter",
+      },
+      requestId: "req-public-limit-maximum",
+    });
+    expect(response.headers.get("x-request-id")).toBe("req-public-limit-maximum");
+  });
+
+  it("returns normalized error shape for invalid non-numeric cursor", async () => {
+    const response = await app.request("/v1/public/scams?cursor=not-a-number", {
+      headers: {
+        "x-request-id": "req-public-cursor-non-numeric",
       },
     });
 
@@ -103,8 +139,45 @@ describe("public v1 routes", () => {
         code: "INVALID_QUERY",
         message: "Invalid 'cursor' query parameter",
       },
-      requestId: "req-public-cursor",
+      requestId: "req-public-cursor-non-numeric",
     });
-    expect(response.headers.get("x-request-id")).toBe("req-public-cursor");
+    expect(response.headers.get("x-request-id")).toBe("req-public-cursor-non-numeric");
+  });
+
+  it("returns normalized error shape for invalid float cursor", async () => {
+    const response = await app.request("/v1/public/scams?cursor=0.5", {
+      headers: {
+        "x-request-id": "req-public-cursor-float",
+      },
+    });
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: "INVALID_QUERY",
+        message: "Invalid 'cursor' query parameter",
+      },
+      requestId: "req-public-cursor-float",
+    });
+    expect(response.headers.get("x-request-id")).toBe("req-public-cursor-float");
+  });
+
+  it("returns normalized error shape for invalid cursor on references endpoint", async () => {
+    const response = await app.request("/v1/public/references?cursor=-1", {
+      headers: {
+        "x-request-id": "req-public-references-cursor",
+      },
+    });
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: "INVALID_QUERY",
+        message: "Invalid 'cursor' query parameter",
+      },
+      requestId: "req-public-references-cursor",
+    });
+    expect(response.headers.get("x-request-id")).toBe("req-public-references-cursor");
   });
 });
+
