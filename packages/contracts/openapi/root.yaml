@@ -21,12 +21,16 @@ paths:
     $ref: "./paths/me.yaml#/paths/~1v1~1me~1saved-jobs"
   /v1/me/notifications:
     $ref: "./paths/me.yaml#/paths/~1v1~1me~1notifications"
+  /v1/me/notifications/{ruleId}:
+    $ref: "./paths/me.yaml#/paths/~1v1~1me~1notifications~1{ruleId}"
   /v1/me/background-check:
     $ref: "./paths/me.yaml#/paths/~1v1~1me~1background-check"
   /v1/me/portfolio-reviews:
     $ref: "./paths/me.yaml#/paths/~1v1~1me~1portfolio-reviews"
   /v1/me/settings:
     $ref: "./paths/me.yaml#/paths/~1v1~1me~1settings"
+  /v1/me/settings/account:
+    $ref: "./paths/me.yaml#/paths/~1v1~1me~1settings~1account"
   /v1/admin/users:
     $ref: "./paths/admin.yaml#/paths/~1v1~1admin~1users"
   /v1/admin/stats:

@@ -44,6 +44,18 @@ paths:
       responses:
         "200":
           description: OK
+    post:
+      operationId: postMeSavedJobs
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: deleteMeSavedJobs
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
   /v1/me/notifications:
     get:
       operationId: getMeNotifications
@@ -51,9 +63,46 @@ paths:
       responses:
         "200":
           description: OK
+    post:
+      operationId: postMeNotifications
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
+  /v1/me/notifications/{ruleId}:
+    put:
+      operationId: putMeNotificationsRuleById
+      tags: [Me]
+      parameters:
+        - in: path
+          name: ruleId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: deleteMeNotificationsRuleById
+      tags: [Me]
+      parameters:
+        - in: path
+          name: ruleId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
   /v1/me/background-check:
     get:
       operationId: getMeBackgroundCheck
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
+    post:
+      operationId: postMeBackgroundCheck
       tags: [Me]
       responses:
         "200":
@@ -65,9 +114,28 @@ paths:
       responses:
         "200":
           description: OK
+    post:
+      operationId: postMePortfolioReviews
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
   /v1/me/settings:
     get:
       operationId: getMeSettings
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
+    put:
+      operationId: putMeSettings
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
+  /v1/me/settings/account:
+    delete:
+      operationId: deleteMeSettingsAccount
       tags: [Me]
       responses:
         "200":
