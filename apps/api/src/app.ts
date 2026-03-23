@@ -8,6 +8,7 @@ import { rateLimitMiddleware } from "./middleware/rate-limit";
 import { requestIdMiddleware } from "./middleware/request-id";
 import { adminHealthRoute } from "./routes/admin/health";
 import { internalHealthRoute } from "./routes/internal/health";
+import { meAuthRoute } from "./routes/me/auth";
 import { meHealthRoute } from "./routes/me/health";
 import { publicHealthRoute } from "./routes/public/health";
 import { publicJobsRoute } from "./routes/public/jobs";
@@ -33,6 +34,7 @@ app.route("/v1/public", publicReferencesRoute);
 app.route("/v1/public", publicStatusRoute);
 
 app.use("/v1/me/*", authSessionMiddleware);
+app.route("/v1/me", meAuthRoute);
 app.route("/v1/me", meHealthRoute);
 
 app.use("/v1/admin/*", authAdminMiddleware);

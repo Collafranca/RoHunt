@@ -1,7 +1,21 @@
 paths:
+  /v1/me/auth/discord/callback:
+    get:
+      operationId: getMeAuthDiscordCallback
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
   /v1/me/auth/me:
     get:
-      operationId: getMeProfile
+      operationId: getMeAuthMe
+      tags: [Me]
+      responses:
+        "200":
+          description: OK
+  /v1/me/auth/logout:
+    post:
+      operationId: postMeAuthLogout
       tags: [Me]
       responses:
         "200":

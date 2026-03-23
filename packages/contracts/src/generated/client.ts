@@ -36,7 +36,7 @@ export const operations = [
     "path": "/v1/public/status"
   },
   {
-    "operationId": "getMeProfile",
+    "operationId": "getMeAuthMe",
     "method": "GET",
     "path": "/v1/me/auth/me"
   },
@@ -108,7 +108,7 @@ export function getPublicStatus(): GeneratedClientRequest {
   return { method: "GET", path: "/v1/public/status" };
 }
 
-export function getMeProfile(): GeneratedClientRequest {
+export function getMeAuthMe(): GeneratedClientRequest {
   return { method: "GET", path: "/v1/me/auth/me" };
 }
 
