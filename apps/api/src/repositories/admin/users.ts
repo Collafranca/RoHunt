@@ -18,10 +18,6 @@ export type AdminUserActionResult = {
 
 const actionResultsByUserId = new Map<string, AdminUserActionResult>();
 
-function resolveRole(userId: string): AdminUser["role"] {
-  return userId.includes("admin") ? "admin" : "member";
-}
-
 export function listAdminUsers(): AdminUser[] {
   const nowIso = new Date().toISOString();
 
@@ -48,14 +44,7 @@ export function listAdminUsers(): AdminUser[] {
 export function getAdminUserById(userId: string): AdminUser | null {
   const user = listAdminUsers().find((entry) => entry.id === userId);
 
-  if (!user) {
-    return null;
-  }
-
-  return {
-    ...user,
-    role: resolveRole(user.id),
-  };
+  return user ?? null;
 }
 
 export function applyAdminUserAction(userId: string, action: AdminUserAction): AdminUserActionResult {

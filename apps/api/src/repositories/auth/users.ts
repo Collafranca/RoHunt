@@ -1,7 +1,10 @@
+export type AuthUserRole = "admin" | "member";
+
 export type AuthUser = {
   readonly id: string;
   readonly discordId: string;
   readonly username: string;
+  readonly role: AuthUserRole;
   readonly createdAt: string;
   readonly updatedAt: string;
 };
@@ -13,10 +16,16 @@ type UpsertDiscordUserInput = {
 
 const usersById = new Map<string, AuthUser>();
 const userIdByDiscordId = new Map<string, string>();
+const ADMIN_DISCORD_IDS = new Set<string>(["discord_admin", "discord_admin_stats"]);
+
+function resolveAuthUserRole(discordId: string): AuthUserRole {
+  return ADMIN_DISCORD_IDS.has(discordId) ? "admin" : "member";
+}
 
 export function upsertDiscordUser(input: UpsertDiscordUserInput): AuthUser {
   const existingUserId = userIdByDiscordId.get(input.discordId);
   const nowIso = new Date().toISOString();
+  const role = resolveAuthUserRole(input.discordId);
 
   if (existingUserId) {
     const existing = usersById.get(existingUserId);
@@ -25,6 +34,7 @@ export function upsertDiscordUser(input: UpsertDiscordUserInput): AuthUser {
       const updated: AuthUser = {
         ...existing,
         username: input.username,
+        role,
         updatedAt: nowIso,
       };
 
@@ -38,6 +48,7 @@ export function upsertDiscordUser(input: UpsertDiscordUserInput): AuthUser {
     id,
     discordId: input.discordId,
     username: input.username,
+    role,
     createdAt: nowIso,
     updatedAt: nowIso,
   };

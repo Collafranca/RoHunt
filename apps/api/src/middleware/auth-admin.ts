@@ -10,7 +10,7 @@ export const authAdminMiddleware: MiddlewareHandler = async (c, next) => {
     throw new ApiError(401, "UNAUTHORIZED", "Authentication required");
   }
 
-  if (!auth.user.id.includes("admin")) {
+  if (auth.user.role !== "admin") {
     throw new ApiError(403, "FORBIDDEN", "Admin role required");
   }
 
