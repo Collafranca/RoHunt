@@ -1,0 +1,28 @@
+---
+import AppShell from "../layouts/AppShell.astro";
+import { getScamsPageData } from "../lib/api-client";
+import { renderScamsState } from "../components/scams/ScamsSurface";
+
+const data = await getScamsPageData();
+const state = renderScamsState(data);
+---
+
+<AppShell>
+  <section>
+    <h1>Scams</h1>
+    <div data-state={state.kind}>
+      {
+        state.kind === "data" ? (
+          <>
+            <ul>
+              {state.items.map((_, index) => <li>Report {index + 1}</li>)}
+            </ul>
+            <p>{state.message}</p>
+          </>
+        ) : (
+          <p>{state.message}</p>
+        )
+      }
+    </div>
+  </section>
+</AppShell>

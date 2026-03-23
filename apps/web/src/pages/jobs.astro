@@ -1,0 +1,28 @@
+---
+import AppShell from "../layouts/AppShell.astro";
+import { getJobsPageData } from "../lib/api-client";
+import { renderJobsState } from "../components/jobs/JobsSurface";
+
+const data = await getJobsPageData();
+const state = renderJobsState(data);
+---
+
+<AppShell>
+  <section>
+    <h1>Jobs</h1>
+    <div data-state={state.kind}>
+      {
+        state.kind === "data" ? (
+          <>
+            <ul>
+              {state.items.map((_, index) => <li>Job {index + 1}</li>)}
+            </ul>
+            <p>{state.message}</p>
+          </>
+        ) : (
+          <p>{state.message}</p>
+        )
+      }
+    </div>
+  </section>
+</AppShell>

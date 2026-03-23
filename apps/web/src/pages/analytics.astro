@@ -1,0 +1,28 @@
+---
+import AppShell from "../layouts/AppShell.astro";
+import { getAnalyticsPageData } from "../lib/api-client";
+import { renderAnalyticsState } from "../components/analytics/AnalyticsSurface";
+
+const data = await getAnalyticsPageData();
+const state = renderAnalyticsState(data);
+---
+
+<AppShell>
+  <section>
+    <h1>Analytics</h1>
+    <div data-state={state.kind}>
+      {
+        state.kind === "data" ? (
+          <>
+            <ul>
+              {state.items.map((_, index) => <li>Reference {index + 1}</li>)}
+            </ul>
+            <p>{state.message}</p>
+          </>
+        ) : (
+          <p>{state.message}</p>
+        )
+      }
+    </div>
+  </section>
+</AppShell>
