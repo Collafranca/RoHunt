@@ -11,8 +11,12 @@ paths:
     $ref: "./paths/public.yaml#/paths/~1v1~1public~1references"
   /v1/public/status:
     $ref: "./paths/public.yaml#/paths/~1v1~1public~1status"
+  /v1/me/auth/discord/callback:
+    $ref: "./paths/me.yaml#/paths/~1v1~1me~1auth~1discord~1callback"
   /v1/me/auth/me:
     $ref: "./paths/me.yaml#/paths/~1v1~1me~1auth~1me"
+  /v1/me/auth/logout:
+    $ref: "./paths/me.yaml#/paths/~1v1~1me~1auth~1logout"
   /v1/me/saved-jobs:
     $ref: "./paths/me.yaml#/paths/~1v1~1me~1saved-jobs"
   /v1/me/notifications:

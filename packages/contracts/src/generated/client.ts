@@ -36,9 +36,19 @@ export const operations = [
     "path": "/v1/public/status"
   },
   {
+    "operationId": "getMeAuthDiscordCallback",
+    "method": "GET",
+    "path": "/v1/me/auth/discord/callback"
+  },
+  {
     "operationId": "getMeAuthMe",
     "method": "GET",
     "path": "/v1/me/auth/me"
+  },
+  {
+    "operationId": "postMeAuthLogout",
+    "method": "POST",
+    "path": "/v1/me/auth/logout"
   },
   {
     "operationId": "getMeSavedJobs",
@@ -108,8 +118,16 @@ export function getPublicStatus(): GeneratedClientRequest {
   return { method: "GET", path: "/v1/public/status" };
 }
 
+export function getMeAuthDiscordCallback(): GeneratedClientRequest {
+  return { method: "GET", path: "/v1/me/auth/discord/callback" };
+}
+
 export function getMeAuthMe(): GeneratedClientRequest {
   return { method: "GET", path: "/v1/me/auth/me" };
+}
+
+export function postMeAuthLogout(): GeneratedClientRequest {
+  return { method: "POST", path: "/v1/me/auth/logout" };
 }
 
 export function getMeSavedJobs(): GeneratedClientRequest {
