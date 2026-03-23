@@ -3,27 +3,295 @@ paths:
     get:
       operationId: getPublicJobs
       tags: [Public]
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+        - in: query
+          name: cursor
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - in: query
+          name: type
+          required: false
+          schema:
+            type: string
       responses:
         "200":
-          description: OK
+          description: Paginated public jobs
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, title, type, location, postedAt]
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        type:
+                          type: string
+                        location:
+                          type: string
+                        postedAt:
+                          type: string
+                          format: date-time
+                  meta:
+                    type: object
+                    required: [pagination, filters]
+                    properties:
+                      pagination:
+                        type: object
+                        required: [limit, cursor, nextCursor, total]
+                        properties:
+                          limit:
+                            type: integer
+                          cursor:
+                            type: integer
+                          nextCursor:
+                            oneOf:
+                              - type: integer
+                              - type: "null"
+                          total:
+                            type: integer
+                      filters:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+        "400":
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error, requestId]
+                properties:
+                  error:
+                    type: object
+                    required: [code, message]
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+                  requestId:
+                    type: string
   /v1/public/scams:
     get:
       operationId: getPublicScams
       tags: [Public]
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+        - in: query
+          name: cursor
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - in: query
+          name: severity
+          required: false
+          schema:
+            type: string
       responses:
         "200":
-          description: OK
+          description: Paginated public scam reports
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, title, severity, reportedAt]
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        severity:
+                          type: string
+                        reportedAt:
+                          type: string
+                          format: date-time
+                  meta:
+                    type: object
+                    required: [pagination, filters]
+                    properties:
+                      pagination:
+                        type: object
+                        required: [limit, cursor, nextCursor, total]
+                        properties:
+                          limit:
+                            type: integer
+                          cursor:
+                            type: integer
+                          nextCursor:
+                            oneOf:
+                              - type: integer
+                              - type: "null"
+                          total:
+                            type: integer
+                      filters:
+                        type: object
+                        properties:
+                          severity:
+                            type: string
+        "400":
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error, requestId]
+                properties:
+                  error:
+                    type: object
+                    required: [code, message]
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+                  requestId:
+                    type: string
   /v1/public/references:
     get:
       operationId: getPublicReferences
       tags: [Public]
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+        - in: query
+          name: cursor
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - in: query
+          name: source
+          required: false
+          schema:
+            type: string
       responses:
         "200":
-          description: OK
+          description: Paginated public references
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, source, value]
+                      properties:
+                        id:
+                          type: string
+                        source:
+                          type: string
+                        value:
+                          type: string
+                  meta:
+                    type: object
+                    required: [pagination, filters]
+                    properties:
+                      pagination:
+                        type: object
+                        required: [limit, cursor, nextCursor, total]
+                        properties:
+                          limit:
+                            type: integer
+                          cursor:
+                            type: integer
+                          nextCursor:
+                            oneOf:
+                              - type: integer
+                              - type: "null"
+                          total:
+                            type: integer
+                      filters:
+                        type: object
+                        properties:
+                          source:
+                            type: string
+        "400":
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error, requestId]
+                properties:
+                  error:
+                    type: object
+                    required: [code, message]
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+                  requestId:
+                    type: string
   /v1/public/status:
     get:
       operationId: getPublicStatus
       tags: [Public]
       responses:
         "200":
-          description: OK
+          description: Public API status
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: object
+                    required: [ok, service, version]
+                    properties:
+                      ok:
+                        type: boolean
+                      service:
+                        type: string
+                      version:
+                        type: string
+                  meta:
+                    type: object
+                    required: [generatedAt]
+                    properties:
+                      generatedAt:
+                        type: string
+                        format: date-time

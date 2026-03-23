@@ -10,6 +10,10 @@ import { adminHealthRoute } from "./routes/admin/health";
 import { internalHealthRoute } from "./routes/internal/health";
 import { meHealthRoute } from "./routes/me/health";
 import { publicHealthRoute } from "./routes/public/health";
+import { publicJobsRoute } from "./routes/public/jobs";
+import { publicReferencesRoute } from "./routes/public/references";
+import { publicScamsRoute } from "./routes/public/scams";
+import { publicStatusRoute } from "./routes/public/status";
 
 type AppBindings = {
   Variables: {
@@ -23,6 +27,10 @@ app.use("*", requestIdMiddleware);
 app.use("*", rateLimitMiddleware);
 
 app.route("/v1/public", publicHealthRoute);
+app.route("/v1/public", publicJobsRoute);
+app.route("/v1/public", publicScamsRoute);
+app.route("/v1/public", publicReferencesRoute);
+app.route("/v1/public", publicStatusRoute);
 
 app.use("/v1/me/*", authSessionMiddleware);
 app.route("/v1/me", meHealthRoute);
