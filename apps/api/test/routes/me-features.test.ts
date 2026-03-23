@@ -430,6 +430,67 @@ describe("me feature routes", () => {
     });
   });
 
+  it("rejects notification update payloads with unknown keys", async () => {
+    const cookie = await createSessionCookie("notifications_unknown_keys");
+
+    const createResponse = await app.request("/v1/me/notifications", {
+      method: "POST",
+      headers: {
+        cookie,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        channel: "discord_dm",
+        keyword: "builder",
+      }),
+    });
+
+    const createdBody = await createResponse.json();
+    const ruleId = createdBody.data.rule.id as string;
+
+    const response = await app.request(`/v1/me/notifications/${ruleId}`, {
+      method: "PUT",
+      headers: {
+        cookie,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        keyword: "scripter",
+        extra: true,
+      }),
+    });
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toMatchObject({
+      error: {
+        code: "INVALID_QUERY",
+      },
+    });
+  });
+
+  it("rejects settings update payloads with unknown keys", async () => {
+    const cookie = await createSessionCookie("settings_unknown_keys");
+
+    const response = await app.request("/v1/me/settings", {
+      method: "PUT",
+      headers: {
+        cookie,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        visibility: "private",
+        extra: true,
+      }),
+    });
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toMatchObject({
+      error: {
+        code: "INVALID_QUERY",
+      },
+    });
+  });
+
   it("rejects invalid and empty settings update payloads", async () => {
     const cookie = await createSessionCookie("settings_validation");
 

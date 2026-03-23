@@ -53,6 +53,12 @@ function parseUpdateBody(body: unknown): { readonly keyword?: string; readonly e
     throw new ApiError(400, "INVALID_QUERY", "Invalid notification update body");
   }
 
+  for (const key of Object.keys(normalized)) {
+    if (key !== "keyword" && key !== "enabled") {
+      throw new ApiError(400, "INVALID_QUERY", "Invalid notification update body");
+    }
+  }
+
   const parsed: { keyword?: string; enabled?: boolean } = {};
 
   if (normalized.keyword !== undefined) {

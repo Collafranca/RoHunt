@@ -43,6 +43,12 @@ function parseSettingsUpdate(body: unknown): {
 
   const normalized = body as MeSettingsUpdateBody;
 
+  for (const key of Object.keys(normalized)) {
+    if (key !== "jobAlertsEnabled" && key !== "visibility") {
+      throw new ApiError(400, "INVALID_QUERY", "Invalid settings update body");
+    }
+  }
+
   const parsed: {
     jobAlertsEnabled?: boolean;
     visibility?: MeSettings["visibility"];

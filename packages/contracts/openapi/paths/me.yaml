@@ -323,6 +323,7 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
                 keyword:
                   type: string
@@ -623,6 +624,7 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
                 jobAlertsEnabled:
                   type: boolean
