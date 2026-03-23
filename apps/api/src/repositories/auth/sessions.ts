@@ -46,6 +46,21 @@ export function deleteSessionByToken(token: string): boolean {
   return sessionsByToken.delete(token);
 }
 
+export function deleteSessionsByUserId(userId: string): number {
+  let removedCount = 0;
+
+  for (const [token, session] of sessionsByToken.entries()) {
+    if (session.userId !== userId) {
+      continue;
+    }
+
+    sessionsByToken.delete(token);
+    removedCount += 1;
+  }
+
+  return removedCount;
+}
+
 export function clearSessionsRepository(): void {
   sessionsByToken.clear();
   sessionSequence = 0;

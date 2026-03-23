@@ -52,6 +52,19 @@ export function getUserById(id: string): AuthUser | null {
   return usersById.get(id) ?? null;
 }
 
+export function deleteUserById(id: string): boolean {
+  const existing = usersById.get(id);
+
+  if (!existing) {
+    return false;
+  }
+
+  usersById.delete(id);
+  userIdByDiscordId.delete(existing.discordId);
+
+  return true;
+}
+
 export function clearUsersRepository(): void {
   usersById.clear();
   userIdByDiscordId.clear();

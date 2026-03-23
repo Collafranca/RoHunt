@@ -11,6 +11,14 @@ type BackgroundCheckBody = {
   readonly note?: unknown;
 };
 
+async function parseJsonBody(c: { req: { json: () => Promise<unknown> } }): Promise<unknown> {
+  try {
+    return await c.req.json();
+  } catch {
+    throw new ApiError(400, "INVALID_QUERY", "Invalid JSON body");
+  }
+}
+
 function parseBody(body: unknown): { readonly targetUserId: string; readonly note: string } {
   const normalized = body as BackgroundCheckBody;
 
@@ -41,7 +49,7 @@ meBackgroundCheckRoute.get("/background-check", (c) => {
 
 meBackgroundCheckRoute.post("/background-check", async (c) => {
   const auth = requireAuthSessionContext(c.req.header("cookie"));
-  const body = parseBody(await c.req.json());
+  const body = parseBody(await parseJsonBody(c));
 
   const check = submitBackgroundCheck({
     userId: auth.user.id,

@@ -1,13 +1,13 @@
 import { Hono } from "hono";
 
 import { ApiError } from "../../middleware/errors";
+import { requireAuthSessionContext } from "../../services/auth/session";
 import {
   createNotificationRuleForUser,
   deleteNotificationRuleForUser,
   listNotificationRulesForUser,
   updateNotificationRuleForUser,
 } from "../../services/me/notifications";
-import { requireAuthSessionContext } from "../../services/auth/session";
 
 export const meNotificationsRoute = new Hono();
 
@@ -20,6 +20,14 @@ type NotificationUpdateBody = {
   readonly keyword?: unknown;
   readonly enabled?: unknown;
 };
+
+async function parseJsonBody(c: { req: { json: () => Promise<unknown> } }): Promise<unknown> {
+  try {
+    return await c.req.json();
+  } catch {
+    throw new ApiError(400, "INVALID_QUERY", "Invalid JSON body");
+  }
+}
 
 function parseCreateBody(body: unknown): { readonly channel: string; readonly keyword: string } {
   const normalized = body as NotificationCreateBody;
@@ -47,16 +55,24 @@ function parseUpdateBody(body: unknown): { readonly keyword?: string; readonly e
 
   const parsed: { keyword?: string; enabled?: boolean } = {};
 
-  if (typeof normalized.keyword === "string") {
-    if (normalized.keyword.trim().length === 0) {
+  if (normalized.keyword !== undefined) {
+    if (typeof normalized.keyword !== "string" || normalized.keyword.trim().length === 0) {
       throw new ApiError(400, "INVALID_QUERY", "Invalid 'keyword' body parameter");
     }
 
     parsed.keyword = normalized.keyword.trim();
   }
 
-  if (typeof normalized.enabled === "boolean") {
+  if (normalized.enabled !== undefined) {
+    if (typeof normalized.enabled !== "boolean") {
+      throw new ApiError(400, "INVALID_QUERY", "Invalid 'enabled' body parameter");
+    }
+
     parsed.enabled = normalized.enabled;
+  }
+
+  if (parsed.keyword === undefined && parsed.enabled === undefined) {
+    throw new ApiError(400, "INVALID_QUERY", "Invalid notification update body");
   }
 
   return parsed;
@@ -85,7 +101,7 @@ meNotificationsRoute.get("/notifications", (c) => {
 
 meNotificationsRoute.post("/notifications", async (c) => {
   const auth = requireAuthSessionContext(c.req.header("cookie"));
-  const body = parseCreateBody(await c.req.json());
+  const body = parseCreateBody(await parseJsonBody(c));
 
   const rule = createNotificationRuleForUser({
     userId: auth.user.id,
@@ -103,7 +119,7 @@ meNotificationsRoute.post("/notifications", async (c) => {
 meNotificationsRoute.put("/notifications/:ruleId", async (c) => {
   const auth = requireAuthSessionContext(c.req.header("cookie"));
   const ruleId = parseRuleId(c.req.param("ruleId"));
-  const body = parseUpdateBody(await c.req.json());
+  const body = parseUpdateBody(await parseJsonBody(c));
 
   const rule = updateNotificationRuleForUser({
     userId: auth.user.id,

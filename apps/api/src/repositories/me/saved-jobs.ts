@@ -66,3 +66,12 @@ export function unsaveJobForUser(userId: string, jobId: string): boolean {
 
   return removed;
 }
+
+export function deleteSavedJobsByUserId(userId: string): boolean {
+  return savedJobsByUserId.delete(userId);
+}
+
+export function clearSavedJobsRepository(): void {
+  savedJobsByUserId.clear();
+  savedJobSequence = 0;
+}

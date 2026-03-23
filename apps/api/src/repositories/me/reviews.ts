@@ -38,3 +38,12 @@ export function createPortfolioReview(input: CreatePortfolioReviewInput): Portfo
 
   return review;
 }
+
+export function deletePortfolioReviewsByUserId(userId: string): boolean {
+  return portfolioReviewsByUserId.delete(userId);
+}
+
+export function clearPortfolioReviewsRepository(): void {
+  portfolioReviewsByUserId.clear();
+  portfolioReviewSequence = 0;
+}

@@ -106,3 +106,12 @@ export function deleteNotificationRuleById(userId: string, ruleId: string): bool
 
   return removed;
 }
+
+export function deleteNotificationRulesByUserId(userId: string): boolean {
+  return notificationRulesByUserId.delete(userId);
+}
+
+export function clearNotificationRulesRepository(): void {
+  notificationRulesByUserId.clear();
+  notificationRuleSequence = 0;
+}

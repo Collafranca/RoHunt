@@ -16,7 +16,33 @@ paths:
             type: string
       responses:
         "200":
-          description: OK
+          description: Authenticated user from Discord OAuth callback
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [user]
+                    properties:
+                      user:
+                        type: object
+                        required: [id, discordId, username, createdAt, updatedAt]
+                        properties:
+                          id:
+                            type: string
+                          discordId:
+                            type: string
+                          username:
+                            type: string
+                          createdAt:
+                            type: string
+                            format: date-time
+                          updatedAt:
+                            type: string
+                            format: date-time
         "400":
           description: Invalid query parameters
   /v1/me/auth/me:
@@ -25,7 +51,33 @@ paths:
       tags: [Me]
       responses:
         "200":
-          description: OK
+          description: Current authenticated user
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [user]
+                    properties:
+                      user:
+                        type: object
+                        required: [id, discordId, username, createdAt, updatedAt]
+                        properties:
+                          id:
+                            type: string
+                          discordId:
+                            type: string
+                          username:
+                            type: string
+                          createdAt:
+                            type: string
+                            format: date-time
+                          updatedAt:
+                            type: string
+                            format: date-time
         "401":
           description: Authentication required
   /v1/me/auth/logout:
@@ -34,7 +86,19 @@ paths:
       tags: [Me]
       responses:
         "200":
-          description: OK
+          description: Logout success
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [ok]
+                    properties:
+                      ok:
+                        type: boolean
         "401":
           description: Authentication required
   /v1/me/saved-jobs:
@@ -43,32 +107,206 @@ paths:
       tags: [Me]
       responses:
         "200":
-          description: OK
+          description: Saved jobs for current user
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items]
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          required: [id, userId, jobId, savedAt]
+                          properties:
+                            id:
+                              type: string
+                            userId:
+                              type: string
+                            jobId:
+                              type: string
+                            savedAt:
+                              type: string
+                              format: date-time
+        "401":
+          description: Authentication required
     post:
       operationId: postMeSavedJobs
       tags: [Me]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [jobId]
+              properties:
+                jobId:
+                  type: string
+                  minLength: 1
       responses:
         "200":
-          description: OK
+          description: Saved job created or returned if already saved
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [savedJob]
+                    properties:
+                      savedJob:
+                        type: object
+                        required: [id, userId, jobId, savedAt]
+                        properties:
+                          id:
+                            type: string
+                          userId:
+                            type: string
+                          jobId:
+                            type: string
+                          savedAt:
+                            type: string
+                            format: date-time
+        "400":
+          description: Invalid request body
+        "401":
+          description: Authentication required
     delete:
       operationId: deleteMeSavedJobs
       tags: [Me]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [jobId]
+              properties:
+                jobId:
+                  type: string
+                  minLength: 1
       responses:
         "200":
-          description: OK
+          description: Saved job removed
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [ok]
+                    properties:
+                      ok:
+                        type: boolean
+        "400":
+          description: Invalid request body
+        "401":
+          description: Authentication required
   /v1/me/notifications:
     get:
       operationId: getMeNotifications
       tags: [Me]
       responses:
         "200":
-          description: OK
+          description: Notification rules for current user
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items]
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          required: [id, userId, channel, keyword, enabled, createdAt, updatedAt]
+                          properties:
+                            id:
+                              type: string
+                            userId:
+                              type: string
+                            channel:
+                              type: string
+                            keyword:
+                              type: string
+                            enabled:
+                              type: boolean
+                            createdAt:
+                              type: string
+                              format: date-time
+                            updatedAt:
+                              type: string
+                              format: date-time
+        "401":
+          description: Authentication required
     post:
       operationId: postMeNotifications
       tags: [Me]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [channel, keyword]
+              properties:
+                channel:
+                  type: string
+                  minLength: 1
+                keyword:
+                  type: string
+                  minLength: 1
       responses:
         "200":
-          description: OK
+          description: Notification rule created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [rule]
+                    properties:
+                      rule:
+                        type: object
+                        required: [id, userId, channel, keyword, enabled, createdAt, updatedAt]
+                        properties:
+                          id:
+                            type: string
+                          userId:
+                            type: string
+                          channel:
+                            type: string
+                          keyword:
+                            type: string
+                          enabled:
+                            type: boolean
+                          createdAt:
+                            type: string
+                            format: date-time
+                          updatedAt:
+                            type: string
+                            format: date-time
+        "400":
+          description: Invalid request body
+        "401":
+          description: Authentication required
   /v1/me/notifications/{ruleId}:
     put:
       operationId: putMeNotificationsRuleById
@@ -79,9 +317,60 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keyword:
+                  type: string
+                  minLength: 1
+                enabled:
+                  type: boolean
+              anyOf:
+                - required: [keyword]
+                - required: [enabled]
       responses:
         "200":
-          description: OK
+          description: Notification rule updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [rule]
+                    properties:
+                      rule:
+                        type: object
+                        required: [id, userId, channel, keyword, enabled, createdAt, updatedAt]
+                        properties:
+                          id:
+                            type: string
+                          userId:
+                            type: string
+                          channel:
+                            type: string
+                          keyword:
+                            type: string
+                          enabled:
+                            type: boolean
+                          createdAt:
+                            type: string
+                            format: date-time
+                          updatedAt:
+                            type: string
+                            format: date-time
+        "400":
+          description: Invalid request body or path parameter
+        "401":
+          description: Authentication required
+        "404":
+          description: Notification rule not found
     delete:
       operationId: deleteMeNotificationsRuleById
       tags: [Me]
@@ -93,50 +382,305 @@ paths:
             type: string
       responses:
         "200":
-          description: OK
+          description: Notification rule deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [ok]
+                    properties:
+                      ok:
+                        type: boolean
+        "400":
+          description: Invalid path parameter
+        "401":
+          description: Authentication required
   /v1/me/background-check:
     get:
       operationId: getMeBackgroundCheck
       tags: [Me]
       responses:
         "200":
-          description: OK
+          description: Background check request history
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items]
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          required: [id, userId, targetUserId, note, status, createdAt]
+                          properties:
+                            id:
+                              type: string
+                            userId:
+                              type: string
+                            targetUserId:
+                              type: string
+                            note:
+                              type: string
+                            status:
+                              type: string
+                              enum: [submitted]
+                            createdAt:
+                              type: string
+                              format: date-time
+        "401":
+          description: Authentication required
     post:
       operationId: postMeBackgroundCheck
       tags: [Me]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [targetUserId, note]
+              properties:
+                targetUserId:
+                  type: string
+                  minLength: 1
+                note:
+                  type: string
+                  minLength: 1
       responses:
         "200":
-          description: OK
+          description: Background check request created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [check]
+                    properties:
+                      check:
+                        type: object
+                        required: [id, userId, targetUserId, note, status, createdAt]
+                        properties:
+                          id:
+                            type: string
+                          userId:
+                            type: string
+                          targetUserId:
+                            type: string
+                          note:
+                            type: string
+                          status:
+                            type: string
+                            enum: [submitted]
+                          createdAt:
+                            type: string
+                            format: date-time
+        "400":
+          description: Invalid request body
+        "401":
+          description: Authentication required
   /v1/me/portfolio-reviews:
     get:
       operationId: getMePortfolioReviews
       tags: [Me]
       responses:
         "200":
-          description: OK
+          description: Portfolio review request history
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items]
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          required: [id, userId, portfolioUrl, focus, status, createdAt]
+                          properties:
+                            id:
+                              type: string
+                            userId:
+                              type: string
+                            portfolioUrl:
+                              type: string
+                            focus:
+                              type: string
+                            status:
+                              type: string
+                              enum: [queued]
+                            createdAt:
+                              type: string
+                              format: date-time
+        "401":
+          description: Authentication required
     post:
       operationId: postMePortfolioReviews
       tags: [Me]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [portfolioUrl, focus]
+              properties:
+                portfolioUrl:
+                  type: string
+                  minLength: 1
+                focus:
+                  type: string
+                  minLength: 1
       responses:
         "200":
-          description: OK
+          description: Portfolio review request created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [review]
+                    properties:
+                      review:
+                        type: object
+                        required: [id, userId, portfolioUrl, focus, status, createdAt]
+                        properties:
+                          id:
+                            type: string
+                          userId:
+                            type: string
+                          portfolioUrl:
+                            type: string
+                          focus:
+                            type: string
+                          status:
+                            type: string
+                            enum: [queued]
+                          createdAt:
+                            type: string
+                            format: date-time
+        "400":
+          description: Invalid request body
+        "401":
+          description: Authentication required
   /v1/me/settings:
     get:
       operationId: getMeSettings
       tags: [Me]
       responses:
         "200":
-          description: OK
+          description: Current user settings
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [settings]
+                    properties:
+                      settings:
+                        type: object
+                        required: [userId, jobAlertsEnabled, visibility, updatedAt]
+                        properties:
+                          userId:
+                            type: string
+                          jobAlertsEnabled:
+                            type: boolean
+                          visibility:
+                            type: string
+                            enum: [public, private]
+                          updatedAt:
+                            type: string
+                            format: date-time
+        "401":
+          description: Authentication required
     put:
       operationId: putMeSettings
       tags: [Me]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobAlertsEnabled:
+                  type: boolean
+                visibility:
+                  type: string
+                  enum: [public, private]
+              anyOf:
+                - required: [jobAlertsEnabled]
+                - required: [visibility]
       responses:
         "200":
-          description: OK
+          description: Settings updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [settings]
+                    properties:
+                      settings:
+                        type: object
+                        required: [userId, jobAlertsEnabled, visibility, updatedAt]
+                        properties:
+                          userId:
+                            type: string
+                          jobAlertsEnabled:
+                            type: boolean
+                          visibility:
+                            type: string
+                            enum: [public, private]
+                          updatedAt:
+                            type: string
+                            format: date-time
+        "400":
+          description: Invalid request body
+        "401":
+          description: Authentication required
   /v1/me/settings/account:
     delete:
       operationId: deleteMeSettingsAccount
       tags: [Me]
       responses:
         "200":
-          description: OK
+          description: Account-scoped data deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [ok]
+                    properties:
+                      ok:
+                        type: boolean
+        "401":
+          description: Authentication required

@@ -11,6 +11,14 @@ type PortfolioReviewBody = {
   readonly focus?: unknown;
 };
 
+async function parseJsonBody(c: { req: { json: () => Promise<unknown> } }): Promise<unknown> {
+  try {
+    return await c.req.json();
+  } catch {
+    throw new ApiError(400, "INVALID_QUERY", "Invalid JSON body");
+  }
+}
+
 function parseBody(body: unknown): { readonly portfolioUrl: string; readonly focus: string } {
   const normalized = body as PortfolioReviewBody;
 
@@ -41,7 +49,7 @@ mePortfolioReviewsRoute.get("/portfolio-reviews", (c) => {
 
 mePortfolioReviewsRoute.post("/portfolio-reviews", async (c) => {
   const auth = requireAuthSessionContext(c.req.header("cookie"));
-  const body = parseBody(await c.req.json());
+  const body = parseBody(await parseJsonBody(c));
 
   const review = submitPortfolioReview({
     userId: auth.user.id,

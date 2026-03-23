@@ -38,3 +38,12 @@ export function createBackgroundCheck(input: CreateBackgroundCheckInput): Backgr
 
   return check;
 }
+
+export function deleteBackgroundChecksByUserId(userId: string): boolean {
+  return backgroundChecksByUserId.delete(userId);
+}
+
+export function clearBackgroundChecksRepository(): void {
+  backgroundChecksByUserId.clear();
+  backgroundCheckSequence = 0;
+}

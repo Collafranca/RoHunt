@@ -52,3 +52,7 @@ export function updateSettingsByUserId(userId: string, input: UpdateMeSettingsIn
 export function deleteSettingsByUserId(userId: string): boolean {
   return settingsByUserId.delete(userId);
 }
+
+export function clearSettingsRepository(): void {
+  settingsByUserId.clear();
+}
