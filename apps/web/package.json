@@ -8,12 +8,14 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "lint": "node -e \"console.log('lint @rohunt/web (stub)')\"",
-    "typecheck": "node -e \"console.log('typecheck @rohunt/web (stub)')\"",
+    "lint": "pnpm exec astro check",
+    "typecheck": "pnpm exec astro check",
     "test": "vitest run --root ../.."
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.8",
     "astro": "^5",
+    "typescript": "^6.0.2",
     "vitest": "^2.1.9"
   }
 }
