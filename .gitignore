@@ -14,3 +14,7 @@ coverage/
 pnpm-debug.log*
 .DS_Store
 .worktrees/
+
+# Astro cache
+apps/web/.astro/
+.astro/
