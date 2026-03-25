@@ -4,11 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
     "lint": "node -e \"console.error('lint @rohunt/web is not configured yet'); process.exit(1)\"",
     "typecheck": "node -e \"console.error('typecheck @rohunt/web is not configured yet'); process.exit(1)\"",
     "test": "vitest run --root ../.."
   },
   "devDependencies": {
+    "astro": "^5",
     "vitest": "^2.1.9"
   }
 }

@@ -1,0 +1,28 @@
+---
+import AppShell from "../../layouts/AppShell.astro";
+import { getAdminUsersPageData } from "../../lib/api-client";
+import { renderAdminState } from "../../components/admin/AdminSurface";
+
+const data = await getAdminUsersPageData();
+const state = renderAdminState(data);
+---
+
+<AppShell>
+  <section>
+    <h1>Admin Users</h1>
+    <div data-state={state.kind}>
+      {
+        state.kind === "data" ? (
+          <>
+            <ul>
+              {state.items.map((_, index) => <li>User {index + 1}</li>)}
+            </ul>
+            <p>{state.message}</p>
+          </>
+        ) : (
+          <p>{state.message}</p>
+        )
+      }
+    </div>
+  </section>
+</AppShell>

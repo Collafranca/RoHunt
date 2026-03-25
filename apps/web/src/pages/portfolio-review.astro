@@ -1,0 +1,28 @@
+---
+import AppShell from "../layouts/AppShell.astro";
+import { getPortfolioReviewPageData } from "../lib/api-client";
+import { renderReviewsState } from "../components/reviews/ReviewsSurface";
+
+const data = await getPortfolioReviewPageData();
+const state = renderReviewsState(data);
+---
+
+<AppShell>
+  <section>
+    <h1>Portfolio Review</h1>
+    <div data-state={state.kind}>
+      {
+        state.kind === "data" ? (
+          <>
+            <ul>
+              {state.items.map((_, index) => <li>Review {index + 1}</li>)}
+            </ul>
+            <p>{state.message}</p>
+          </>
+        ) : (
+          <p>{state.message}</p>
+        )
+      }
+    </div>
+  </section>
+</AppShell>

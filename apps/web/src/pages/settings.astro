@@ -1,0 +1,28 @@
+---
+import AppShell from "../layouts/AppShell.astro";
+import { getSettingsPageData } from "../lib/api-client";
+import { renderHomeState } from "../components/analytics/AnalyticsSurface";
+
+const data = await getSettingsPageData();
+const state = renderHomeState(data);
+---
+
+<AppShell>
+  <section>
+    <h1>Settings</h1>
+    <div data-state={state.kind}>
+      {
+        state.kind === "data" ? (
+          <>
+            <ul>
+              {state.items.map((_, index) => <li>Setting {index + 1}</li>)}
+            </ul>
+            <p>{state.message}</p>
+          </>
+        ) : (
+          <p>{state.message}</p>
+        )
+      }
+    </div>
+  </section>
+</AppShell>

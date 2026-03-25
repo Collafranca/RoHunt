@@ -1,0 +1,28 @@
+---
+import AppShell from "../layouts/AppShell.astro";
+import { getNotificationsPageData } from "../lib/api-client";
+import { renderNotificationsState } from "../components/notifications/NotificationsSurface";
+
+const data = await getNotificationsPageData();
+const state = renderNotificationsState(data);
+---
+
+<AppShell>
+  <section>
+    <h1>Notifications</h1>
+    <div data-state={state.kind}>
+      {
+        state.kind === "data" ? (
+          <>
+            <ul>
+              {state.items.map((_, index) => <li>Notification {index + 1}</li>)}
+            </ul>
+            <p>{state.message}</p>
+          </>
+        ) : (
+          <p>{state.message}</p>
+        )
+      }
+    </div>
+  </section>
+</AppShell>

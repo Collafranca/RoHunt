@@ -1,4 +1,11 @@
 import {
+  getAdminStats,
+  getAdminUsers,
+  getMeBackgroundCheck,
+  getMeNotifications,
+  getMePortfolioReviews,
+  getMeSavedJobs,
+  getMeSettings,
   getPublicJobs,
   getPublicReferences,
   getPublicScams,
@@ -92,4 +99,32 @@ export function getScamsPageData(options?: { baseUrl?: string; fetchImpl?: Fetch
 
 export function getAnalyticsPageData(options?: { baseUrl?: string; fetchImpl?: FetchLike }) {
   return loadPublic<unknown[]>(getPublicReferences(), options);
+}
+
+export function getSavedJobsPageData(options?: { baseUrl?: string; fetchImpl?: FetchLike }) {
+  return loadPublic<unknown[]>(getMeSavedJobs(), options);
+}
+
+export function getNotificationsPageData(options?: { baseUrl?: string; fetchImpl?: FetchLike }) {
+  return loadPublic<unknown[]>(getMeNotifications(), options);
+}
+
+export function getBackgroundCheckPageData(options?: { baseUrl?: string; fetchImpl?: FetchLike }) {
+  return loadPublic<unknown[]>(getMeBackgroundCheck(), options);
+}
+
+export function getPortfolioReviewPageData(options?: { baseUrl?: string; fetchImpl?: FetchLike }) {
+  return loadPublic<unknown[]>(getMePortfolioReviews(), options);
+}
+
+export function getSettingsPageData(options?: { baseUrl?: string; fetchImpl?: FetchLike }) {
+  return loadPublic<unknown[]>(getMeSettings(), options);
+}
+
+export function getAdminUsersPageData(options?: { baseUrl?: string; fetchImpl?: FetchLike }) {
+  return loadPublic<unknown[]>(getAdminUsers(), options);
+}
+
+export function getAdminStatsPageData(options?: { baseUrl?: string; fetchImpl?: FetchLike }) {
+  return loadPublic<unknown[]>(getAdminStats(), options);
 }
