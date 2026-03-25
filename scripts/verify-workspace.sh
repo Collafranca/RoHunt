@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Canonical workspace structural guard script; scripts/verify/verify-workspace.sh delegates here.
 ROOT="$(git rev-parse --show-toplevel)"
 
 required_files=(
