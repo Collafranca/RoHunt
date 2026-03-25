@@ -1,9 +1,16 @@
 ---
 import AppShell from "../layouts/AppShell.astro";
-import { getBackgroundCheckPageData } from "../lib/api-client";
+import { getAuthSessionState, getBackgroundCheckPageData } from "../lib/api-client";
 import { renderChecksState } from "../components/checks/ChecksSurface";
 
-const data = await getBackgroundCheckPageData();
+const cookieHeader = Astro.request.headers.get("cookie") ?? undefined;
+const auth = await getAuthSessionState({ cookieHeader });
+
+if (!auth.authenticated) {
+  return Astro.redirect("/");
+}
+
+const data = await getBackgroundCheckPageData({ cookieHeader });
 const state = renderChecksState(data);
 ---
 

@@ -45,42 +45,49 @@ describe("web auth routes task 15", () => {
     }
   });
 
-  it("wires auth pages to api-client methods and state mappers", () => {
+  it("wires auth/admin pages to api-client methods and explicit gating", () => {
     const expectations = [
       {
         file: resolve(root, "apps/web/src/pages/saved-jobs.astro"),
         apiCall: "getSavedJobsPageData",
         componentCall: "renderJobsState",
+        requireAdmin: false,
       },
       {
         file: resolve(root, "apps/web/src/pages/notifications.astro"),
         apiCall: "getNotificationsPageData",
         componentCall: "renderNotificationsState",
+        requireAdmin: false,
       },
       {
         file: resolve(root, "apps/web/src/pages/background-check.astro"),
         apiCall: "getBackgroundCheckPageData",
         componentCall: "renderChecksState",
+        requireAdmin: false,
       },
       {
         file: resolve(root, "apps/web/src/pages/portfolio-review.astro"),
         apiCall: "getPortfolioReviewPageData",
         componentCall: "renderReviewsState",
+        requireAdmin: false,
       },
       {
         file: resolve(root, "apps/web/src/pages/settings.astro"),
         apiCall: "getSettingsPageData",
         componentCall: "renderHomeState",
+        requireAdmin: false,
       },
       {
         file: resolve(root, "apps/web/src/pages/admin/users.astro"),
         apiCall: "getAdminUsersPageData",
         componentCall: "renderAdminState",
+        requireAdmin: true,
       },
       {
         file: resolve(root, "apps/web/src/pages/admin/stats.astro"),
         apiCall: "getAdminStatsPageData",
         componentCall: "renderAdminState",
+        requireAdmin: true,
       },
     ];
 
@@ -88,10 +95,20 @@ describe("web auth routes task 15", () => {
       const source = readFileSync(item.file, "utf8");
 
       expect(source).toContain("import AppShell");
-      expect(source).toContain(`import { ${item.apiCall} }`);
+      expect(source).toContain("getAuthSessionState");
+      expect(source).toContain(item.apiCall);
       expect(source).toContain(`import { ${item.componentCall} }`);
-      expect(source).toContain(`await ${item.apiCall}(`);
-      expect(source).toContain(`const state = ${item.componentCall}(`);
+      expect(source).toContain("const cookieHeader = Astro.request.headers.get(\"cookie\") ?? undefined;");
+      expect(source).toContain("const auth = await getAuthSessionState({ cookieHeader });");
+      expect(source).toContain("if (!auth.authenticated)");
+      expect(source).toContain("return Astro.redirect(\"/\");");
+
+      if (item.requireAdmin) {
+        expect(source).toContain("if (!auth.isAdmin)");
+      }
+
+      expect(source).toContain(`const data = await ${item.apiCall}({ cookieHeader });`);
+      expect(source).toContain(`const state = ${item.componentCall}(data);`);
       expect(source).toContain("data-state={state.kind}");
     }
   });
@@ -152,7 +169,7 @@ describe("web auth routes task 15", () => {
     }
   });
 
-  it("builds auth/admin request URLs from generated client operations", async () => {
+  it("builds auth/admin request URLs with allowlisted session-cookie forwarding", async () => {
     const clientPath = resolve(root, "apps/web/src/lib/api-client.ts");
 
     expect(existsSync(clientPath)).toBe(true);
@@ -160,13 +177,28 @@ describe("web auth routes task 15", () => {
     const moduleUrl = `${pathToFileURL(clientPath).href}?task15-client=${Date.now()}`;
     const api = await import(moduleUrl);
 
-    const calls: Array<{ url: string; method: string }> = [];
+    const calls: Array<{ url: string; method: string; credentials?: RequestCredentials; cookie?: string }> = [];
     const baseUrl = "https://example.test";
+    const cookieHeader = "foo=bar; rohunt_session=auth-token; theme=dark";
 
     const fetchImpl: typeof fetch = async (input, init) => {
       const url = String(input);
       const method = String(init?.method ?? "GET");
-      calls.push({ url, method });
+      const headers = init?.headers as Record<string, string> | undefined;
+
+      calls.push({
+        url,
+        method,
+        credentials: init?.credentials,
+        cookie: headers?.cookie,
+      });
+
+      if (url.endsWith("/v1/me/auth/me")) {
+        return new Response(JSON.stringify({ data: { user: { id: "user_1", role: "admin" } } }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
+      }
 
       return new Response(JSON.stringify([]), {
         status: 200,
@@ -174,21 +206,121 @@ describe("web auth routes task 15", () => {
       });
     };
 
-    await api.getSavedJobsPageData({ baseUrl, fetchImpl });
-    await api.getNotificationsPageData({ baseUrl, fetchImpl });
-    await api.getBackgroundCheckPageData({ baseUrl, fetchImpl });
-    await api.getPortfolioReviewPageData({ baseUrl, fetchImpl });
-    await api.getSettingsPageData({ baseUrl, fetchImpl });
-    await api.getAdminUsersPageData({ baseUrl, fetchImpl });
-    await api.getAdminStatsPageData({ baseUrl, fetchImpl });
+    await api.getAuthSessionState({ baseUrl, fetchImpl, cookieHeader });
+    await api.getSavedJobsPageData({ baseUrl, fetchImpl, cookieHeader });
+    await api.getNotificationsPageData({ baseUrl, fetchImpl, cookieHeader });
+    await api.getBackgroundCheckPageData({ baseUrl, fetchImpl, cookieHeader });
+    await api.getPortfolioReviewPageData({ baseUrl, fetchImpl, cookieHeader });
+    await api.getSettingsPageData({ baseUrl, fetchImpl, cookieHeader });
+    await api.getAdminUsersPageData({ baseUrl, fetchImpl, cookieHeader });
+    await api.getAdminStatsPageData({ baseUrl, fetchImpl, cookieHeader });
 
-    expect(calls).toHaveLength(7);
-    expect(calls[0]).toEqual({ url: "https://example.test/v1/me/saved-jobs", method: "GET" });
-    expect(calls[1]).toEqual({ url: "https://example.test/v1/me/notifications", method: "GET" });
-    expect(calls[2]).toEqual({ url: "https://example.test/v1/me/background-check", method: "GET" });
-    expect(calls[3]).toEqual({ url: "https://example.test/v1/me/portfolio-reviews", method: "GET" });
-    expect(calls[4]).toEqual({ url: "https://example.test/v1/me/settings", method: "GET" });
-    expect(calls[5]).toEqual({ url: "https://example.test/v1/admin/users", method: "GET" });
-    expect(calls[6]).toEqual({ url: "https://example.test/v1/admin/stats", method: "GET" });
+    const forwardedCookie = "rohunt_session=auth-token";
+
+    expect(calls).toHaveLength(8);
+    expect(calls[0]).toEqual({
+      url: "https://example.test/v1/me/auth/me",
+      method: "GET",
+      credentials: "include",
+      cookie: forwardedCookie,
+    });
+    expect(calls[1]).toEqual({
+      url: "https://example.test/v1/me/saved-jobs",
+      method: "GET",
+      credentials: "include",
+      cookie: forwardedCookie,
+    });
+    expect(calls[2]).toEqual({
+      url: "https://example.test/v1/me/notifications",
+      method: "GET",
+      credentials: "include",
+      cookie: forwardedCookie,
+    });
+    expect(calls[3]).toEqual({
+      url: "https://example.test/v1/me/background-check",
+      method: "GET",
+      credentials: "include",
+      cookie: forwardedCookie,
+    });
+    expect(calls[4]).toEqual({
+      url: "https://example.test/v1/me/portfolio-reviews",
+      method: "GET",
+      credentials: "include",
+      cookie: forwardedCookie,
+    });
+    expect(calls[5]).toEqual({
+      url: "https://example.test/v1/me/settings",
+      method: "GET",
+      credentials: "include",
+      cookie: forwardedCookie,
+    });
+    expect(calls[6]).toEqual({
+      url: "https://example.test/v1/admin/users",
+      method: "GET",
+      credentials: "include",
+      cookie: forwardedCookie,
+    });
+    expect(calls[7]).toEqual({
+      url: "https://example.test/v1/admin/stats",
+      method: "GET",
+      credentials: "include",
+      cookie: forwardedCookie,
+    });
+  });
+
+  it("fails closed for malformed 200 auth payloads and preserves expected auth mapping", async () => {
+    const clientPath = resolve(root, "apps/web/src/lib/api-client.ts");
+    const moduleUrl = `${pathToFileURL(clientPath).href}?task15-auth-state=${Date.now()}`;
+    const api = await import(moduleUrl);
+
+    const baseUrl = "https://example.test";
+
+    const unauthenticated = await api.getAuthSessionState({
+      baseUrl,
+      fetchImpl: async () =>
+        new Response(JSON.stringify({ error: "unauthorized" }), {
+          status: 401,
+          headers: { "content-type": "application/json" },
+        }),
+    });
+    expect(unauthenticated).toEqual({ authenticated: false, isAdmin: false });
+
+    const malformedSuccess = await api.getAuthSessionState({
+      baseUrl,
+      fetchImpl: async () =>
+        new Response(JSON.stringify({ data: { user: { role: "admin" } } }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+    });
+    expect(malformedSuccess).toEqual({ authenticated: false, isAdmin: false });
+
+    const standardUser = await api.getAuthSessionState({
+      baseUrl,
+      fetchImpl: async () =>
+        new Response(JSON.stringify({ data: { user: { id: "user_2", role: "member" } } }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+    });
+    expect(standardUser).toEqual({ authenticated: true, isAdmin: false });
+
+    const adminUser = await api.getAuthSessionState({
+      baseUrl,
+      fetchImpl: async () =>
+        new Response(JSON.stringify({ data: { user: { id: "user_1", role: "admin" } } }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+    });
+    expect(adminUser).toEqual({ authenticated: true, isAdmin: true });
+
+    const failed = await api.getAuthSessionState({
+      baseUrl,
+      fetchImpl: async () => {
+        throw new Error("network failure");
+      },
+    });
+    expect(failed).toEqual({ authenticated: false, isAdmin: false });
   });
 });

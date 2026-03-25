@@ -1,9 +1,20 @@
 ---
 import AppShell from "../../layouts/AppShell.astro";
-import { getAdminStatsPageData } from "../../lib/api-client";
+import { getAdminStatsPageData, getAuthSessionState } from "../../lib/api-client";
 import { renderAdminState } from "../../components/admin/AdminSurface";
 
-const data = await getAdminStatsPageData();
+const cookieHeader = Astro.request.headers.get("cookie") ?? undefined;
+const auth = await getAuthSessionState({ cookieHeader });
+
+if (!auth.authenticated) {
+  return Astro.redirect("/");
+}
+
+if (!auth.isAdmin) {
+  return Astro.redirect("/");
+}
+
+const data = await getAdminStatsPageData({ cookieHeader });
 const state = renderAdminState(data);
 ---
 

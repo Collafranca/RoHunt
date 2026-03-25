@@ -1,9 +1,16 @@
 ---
 import AppShell from "../layouts/AppShell.astro";
-import { getSettingsPageData } from "../lib/api-client";
+import { getAuthSessionState, getSettingsPageData } from "../lib/api-client";
 import { renderHomeState } from "../components/analytics/AnalyticsSurface";
 
-const data = await getSettingsPageData();
+const cookieHeader = Astro.request.headers.get("cookie") ?? undefined;
+const auth = await getAuthSessionState({ cookieHeader });
+
+if (!auth.authenticated) {
+  return Astro.redirect("/");
+}
+
+const data = await getSettingsPageData({ cookieHeader });
 const state = renderHomeState(data);
 ---
 

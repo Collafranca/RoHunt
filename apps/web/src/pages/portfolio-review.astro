@@ -1,9 +1,16 @@
 ---
 import AppShell from "../layouts/AppShell.astro";
-import { getPortfolioReviewPageData } from "../lib/api-client";
+import { getAuthSessionState, getPortfolioReviewPageData } from "../lib/api-client";
 import { renderReviewsState } from "../components/reviews/ReviewsSurface";
 
-const data = await getPortfolioReviewPageData();
+const cookieHeader = Astro.request.headers.get("cookie") ?? undefined;
+const auth = await getAuthSessionState({ cookieHeader });
+
+if (!auth.authenticated) {
+  return Astro.redirect("/");
+}
+
+const data = await getPortfolioReviewPageData({ cookieHeader });
 const state = renderReviewsState(data);
 ---
 

@@ -1,9 +1,16 @@
 ---
 import AppShell from "../layouts/AppShell.astro";
-import { getSavedJobsPageData } from "../lib/api-client";
+import { getAuthSessionState, getSavedJobsPageData } from "../lib/api-client";
 import { renderJobsState } from "../components/jobs/JobsSurface";
 
-const data = await getSavedJobsPageData();
+const cookieHeader = Astro.request.headers.get("cookie") ?? undefined;
+const auth = await getAuthSessionState({ cookieHeader });
+
+if (!auth.authenticated) {
+  return Astro.redirect("/");
+}
+
+const data = await getSavedJobsPageData({ cookieHeader });
 const state = renderJobsState(data);
 ---
 

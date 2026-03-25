@@ -1,9 +1,16 @@
 ---
 import AppShell from "../layouts/AppShell.astro";
-import { getNotificationsPageData } from "../lib/api-client";
+import { getAuthSessionState, getNotificationsPageData } from "../lib/api-client";
 import { renderNotificationsState } from "../components/notifications/NotificationsSurface";
 
-const data = await getNotificationsPageData();
+const cookieHeader = Astro.request.headers.get("cookie") ?? undefined;
+const auth = await getAuthSessionState({ cookieHeader });
+
+if (!auth.authenticated) {
+  return Astro.redirect("/");
+}
+
+const data = await getNotificationsPageData({ cookieHeader });
 const state = renderNotificationsState(data);
 ---
 
