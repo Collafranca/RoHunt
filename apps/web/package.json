@@ -8,14 +8,15 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "lint": "pnpm exec astro check",
-    "typecheck": "pnpm exec astro check",
+    "astro:check": "pnpm exec astro check",
+    "lint": "pnpm run astro:check",
+    "typecheck": "pnpm run astro:check",
     "test": "vitest run --root ../.."
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
     "astro": "^5",
-    "typescript": "^6.0.2",
+    "typescript": "^5.9.3",
     "vitest": "^2.1.9"
   }
 }
