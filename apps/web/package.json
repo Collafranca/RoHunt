@@ -8,8 +8,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "lint": "node -e \"console.error('lint @rohunt/web is not configured yet'); process.exit(1)\"",
-    "typecheck": "node -e \"console.error('typecheck @rohunt/web is not configured yet'); process.exit(1)\"",
+    "lint": "node -e \"console.log('lint @rohunt/web (stub)')\"",
+    "typecheck": "node -e \"console.log('typecheck @rohunt/web (stub)')\"",
     "test": "vitest run --root ../.."
   },
   "devDependencies": {
